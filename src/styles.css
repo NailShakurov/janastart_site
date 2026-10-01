@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/*
+ * JanaStart — «Brutalist Financial».
+ * Палитра: тёмно-синий (brand), коралл (accent), тёплая бумага (paper), лайм (lime).
+ * Шрифты: Unbounded (заголовки), Manrope (текст) — оба с кириллицей.
+ */
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+  --animate-marquee: marquee 40s linear infinite;
+
+  --color-brand: oklch(0.211 0.04 272.2);
+  --color-lime: oklch(0.89 0.18 119.6);
+  --color-paper: oklch(0.959 0.01 87.5);
+  /* accent — для крупных акцентов; accent-strong — для мелкого текста и кнопок (контраст ≥ 4.5:1) */
+  --color-accent: oklch(0.675 0.214 32.5);
+  --color-accent-strong: oklch(0.55 0.19 32);
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-brand);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}

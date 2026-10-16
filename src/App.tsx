@@ -42,24 +42,18 @@ const PROCEDURES = [
 
 const SERVICES = [
   {
-    num: "01",
     title: "Физические лица",
-    tone: "card",
     text: "Кредиты, микрозаймы, задолженность по налогам и штрафам. Разберём, что будет с жильём и доходом, до начала работы.",
   },
   {
-    num: "02",
     title: "ИП и компании",
-    tone: "lime",
     text: "Реабилитация или банкротство бизнеса. Оцениваем риски для учредителей и выстраиваем работу с кредиторами.",
   },
   {
-    num: "03",
     title: "Защита от коллекторов",
-    tone: "card",
     text: "Проверяем законность начислений, отвечаем на давление коллекторов и ведём переговоры с банками о реструктуризации.",
   },
-] as const;
+];
 
 const OTHER_SERVICES = [
   {
@@ -90,25 +84,20 @@ const OTHER_SERVICES = [
 
 const STEPS = [
   {
-    n: "1",
     title: "Анализ ситуации",
     text: "Бесплатно разбираем долги, доходы и имущество. Говорим честно, что возможно.",
   },
   {
-    n: "2",
     title: "План и договор",
     text: "Выбираем процедуру, собираем документы, фиксируем стоимость в договоре.",
   },
   {
-    n: "3",
     title: "Сопровождение",
     text: "Подаём заявление, общаемся с кредиторами, представляем вас в суде.",
   },
   {
-    n: "4",
     title: "Новый старт",
     text: "Вы получаете результат по процедуре и понимаете, что делать дальше.",
-    accent: true,
   },
 ];
 
@@ -185,7 +174,19 @@ const JSON_LD = {
   openingHours: "Mo-Fr 09:00-19:00",
 };
 
-const MAX = "mx-auto max-w-7xl px-4 sm:px-5";
+/* Общие классы по макету */
+const WRAP = "mx-auto max-w-[1080px] px-5";
+const SECTION = "py-[72px]";
+const H2 = "text-[clamp(28px,4vw,40px)] font-bold";
+const H3 = "text-[21px] font-bold";
+const LEAD = "mt-3 max-w-[62ch] text-ink2";
+const CARD = "rounded-[10px] border border-line bg-white p-[26px]";
+const BTN = "inline-block rounded-md px-6 py-3.5 text-center font-bold transition-colors";
+const BTN_MAIN = `${BTN} bg-dawn text-ink hover:bg-dawn-hover`;
+const BTN_GHOST = `${BTN} border-2 border-white/50 text-white hover:bg-white/10`;
+const BTN_DARK = `${BTN} bg-ink text-white hover:bg-ink2`;
+const INPUT =
+  "mt-1.5 block w-full rounded-md border border-[#b9c1d3] bg-white p-[13px] text-base focus:border-ink focus:outline-none";
 
 export function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -228,56 +229,59 @@ export function App() {
   const onPhoneClick = () => track("phone_click");
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-paper font-sans text-brand">
+    <div className="min-h-screen overflow-x-clip bg-paper font-sans text-ink">
       <script type="application/ld+json">{JSON.stringify(JSON_LD)}</script>
       <a
         href="#main"
-        className="sr-only z-50 rounded-full bg-brand px-4 py-2 text-lime focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        className="sr-only z-50 rounded-md bg-dawn px-4 py-2 font-bold text-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
       >
         Перейти к содержанию
       </a>
 
-      {/* Topbar */}
-      <header className="sticky top-0 z-40 border-b-2 border-brand/10 bg-paper/90 backdrop-blur">
-        <div className={`${MAX} flex items-center justify-between gap-4 py-3`}>
-          <a href="#top" className="flex items-center gap-3" aria-label="JANA START — на главную">
-            <Logo />
-            <span className="leading-tight">
-              <span className="block font-display text-[15px] font-bold tracking-tight">
-                JANA <span className="text-accent">START</span>
-              </span>
-              <span className="block text-[11px] uppercase tracking-[0.18em] text-brand/70">
-                {SITE.tagline}
-              </span>
+      {/* Шапка */}
+      <header className="sticky top-0 z-40 bg-ink text-white">
+        <div className={`${WRAP} flex min-h-16 items-center justify-between gap-4`}>
+          <a
+            href="#top"
+            className="flex items-center gap-2.5 whitespace-nowrap font-serif text-[22px] font-bold tracking-[0.02em]"
+            aria-label="JANA START — на главную"
+          >
+            <img src="./logo-mark.png" alt="" width="34" height="45" className="h-11 w-auto" />
+            <span>
+              JANA <b className="text-dawn">START</b>
             </span>
           </a>
           <nav
             aria-label="Основная навигация"
-            className="hidden items-center gap-7 text-sm font-semibold lg:flex"
+            className="hidden items-center gap-[22px] text-[15px] lg:flex"
           >
             {NAV.map((item) => (
-              <a key={item.href} href={item.href} className="py-2 hover:text-accent">
+              <a
+                key={item.href}
+                href={item.href}
+                className="opacity-85 hover:underline hover:opacity-100"
+              >
                 {item.label}
               </a>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <a
               href={SITE.phoneHref}
               onClick={onPhoneClick}
-              className="hidden text-sm font-bold tracking-tight xl:block"
+              className="hidden whitespace-nowrap font-bold md:block"
             >
               {SITE.phone}
             </a>
             <a
               href="#contact"
-              className="hidden rounded-full bg-accent-strong px-5 py-3 text-sm font-bold text-white shadow-[4px_4px_0_0_var(--color-brand)] transition-colors hover:bg-brand hover:text-lime sm:inline-block"
+              className="hidden rounded-md bg-dawn px-5 py-2.5 text-[15px] font-bold text-ink transition-colors hover:bg-dawn-hover sm:inline-block"
             >
               Консультация
             </a>
             <button
               type="button"
-              className="grid size-11 place-items-center rounded-full border-2 border-brand lg:hidden"
+              className="grid size-11 place-items-center rounded-md border border-white/40 lg:hidden"
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
               aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
@@ -307,24 +311,20 @@ export function App() {
           <nav
             id="mobile-menu"
             aria-label="Мобильная навигация"
-            className="border-t-2 border-brand/10 lg:hidden"
+            className="border-t border-white/15 lg:hidden"
           >
-            <div className={`${MAX} flex flex-col py-2`}>
+            <div className={`${WRAP} flex flex-col py-2`}>
               {NAV.map((item) => (
                 <a
                   key={item.href}
                   href={item.href}
                   onClick={() => setMenuOpen(false)}
-                  className="border-b border-brand/10 py-4 font-display text-lg font-bold last:border-0"
+                  className="border-b border-white/10 py-4 font-serif text-lg font-bold last:border-0"
                 >
                   {item.label}
                 </a>
               ))}
-              <a
-                href={SITE.phoneHref}
-                onClick={onPhoneClick}
-                className="py-4 font-bold text-accent-strong"
-              >
+              <a href={SITE.phoneHref} onClick={onPhoneClick} className="py-4 font-bold text-dawn">
                 {SITE.phone}
               </a>
             </div>
@@ -334,218 +334,170 @@ export function App() {
 
       <main id="main">
         {/* Hero */}
-        <section id="top" className="relative">
-          <div className={`${MAX} grid items-end gap-10 pb-12 pt-12 sm:pt-16 lg:grid-cols-12`}>
-            <div className="lg:col-span-7">
-              <h1
-                className="font-display font-bold leading-[0.95] tracking-tight"
-                style={{ fontSize: "clamp(2.5rem, 6.4vw, 5rem)" }}
+        <section
+          id="top"
+          className="relative overflow-hidden bg-ink pb-[150px] pt-[84px] text-white"
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-[-420px] left-1/2 h-[560px] w-[1100px] -translate-x-1/2 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 50% 8%, rgba(242,184,75,.95), rgba(242,184,75,.35) 14%, rgba(242,184,75,0) 38%)",
+            }}
+          />
+          <div className={`${WRAP} relative z-10`}>
+            <h1 className="max-w-[14ch] text-[clamp(38px,7vw,72px)] font-bold">
+              Новый старт без долгов
+            </h1>
+            <p className="mt-5 max-w-[54ch] text-[19px] text-mist-light">
+              Jana по-казахски значит «новый». Мы помогаем гражданам, ИП и компаниям выйти из долгов
+              по закону и решаем другие юридические вопросы. Юристы с 20-летним стажем.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <a href="#contact" className={BTN_MAIN}>
+                Бесплатная консультация
+              </a>
+              <a
+                href={whatsappLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={onWhatsappClick}
+                className={BTN_GHOST}
               >
-                Новый старт
-                <br />
-                <span className="text-accent">без долгов</span>
-              </h1>
-              <p className="mt-7 max-w-xl text-lg font-medium leading-snug text-brand/75 md:text-xl">
-                Jana по-казахски значит «новый». Мы помогаем гражданам, ИП и компаниям выйти из
-                долгов по закону и решаем другие юридические вопросы. Юристы с 20-летним стажем.
-              </p>
-              <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-                <a
-                  href="#contact"
-                  className="rounded-full bg-brand px-8 py-5 text-center font-bold text-lime shadow-[6px_6px_0_0_var(--color-accent)] transition-transform hover:-translate-y-0.5"
-                >
-                  Бесплатная консультация →
-                </a>
-                <a
-                  href={whatsappLink()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={onWhatsappClick}
-                  className="rounded-full border-2 border-brand px-8 py-5 text-center font-bold transition-colors hover:bg-brand hover:text-paper"
-                >
-                  Написать в WhatsApp
-                </a>
-              </div>
+                Написать в WhatsApp
+              </a>
             </div>
-
-            <div className="lg:col-span-5">
-              <ul className="grid gap-3 rounded-[28px] bg-brand p-7 text-paper shadow-[8px_8px_0_0_var(--color-lime)] sm:grid-cols-3 lg:grid-cols-1">
-                {FACTS.map((f) => (
-                  <li
-                    key={f.value}
-                    className="border-t border-white/15 pt-4 first:border-0 first:pt-0"
-                  >
-                    <p className="font-display text-3xl font-bold leading-none text-lime">
-                      {f.value}
-                    </p>
-                    <p className="mt-2 text-sm leading-snug text-paper/75">{f.label}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className="mt-11 flex flex-wrap gap-x-9 gap-y-3">
+              {FACTS.map((f) => (
+                <li key={f.value} className="max-w-[200px] text-[15px] text-mist">
+                  <strong className="block font-serif text-[26px] font-bold text-dawn">
+                    {f.value}
+                  </strong>
+                  {f.label}
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
-        {/* Marquee strip */}
-        <div className="overflow-hidden bg-brand py-4 text-lime" aria-hidden="true">
-          <div className="flex w-max animate-marquee gap-10 whitespace-nowrap text-sm font-bold uppercase tracking-[0.15em] motion-reduce:animate-none">
+        {/* Бегущая строка */}
+        <div
+          className="overflow-hidden border-b border-line bg-white py-3.5 text-ink2"
+          aria-hidden="true"
+        >
+          <div className="flex w-max animate-marquee gap-10 whitespace-nowrap text-[13px] font-bold uppercase tracking-[0.15em] motion-reduce:animate-none">
             {[...MARQUEE, ...MARQUEE].map((item, i) => (
               <span key={i} className="flex items-center gap-10">
                 {item}
-                <span>✦</span>
+                <span className="text-dawn">✦</span>
               </span>
             ))}
           </div>
         </div>
 
-        {/* Bankruptcy */}
-        <section id="bankruptcy" className={`${MAX} scroll-mt-20 py-16 sm:py-20`}>
+        {/* Банкротство */}
+        <section id="bankruptcy" className={SECTION}>
           {/* Старый якорь #procedures — псевдоним на этот блок (F-05) */}
-          <span id="procedures" className="block scroll-mt-20" aria-hidden="true" />
-          <div className="mb-9 flex items-end justify-between gap-4">
-            <div>
-              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                Банкротство по закону Казахстана
-              </h2>
-              <p className="mt-5 max-w-2xl text-lg leading-snug text-brand/75">
-                Подходящая процедура зависит от суммы долга, просрочки, дохода и имущества. На
-                консультации мы честно скажем, какая из них вам подходит и подходит ли банкротство
-                вообще.
-              </p>
+          <span id="procedures" className="block" aria-hidden="true" />
+          <div className={WRAP}>
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <h2 className={H2}>Банкротство по закону Казахстана</h2>
+                <p className={LEAD}>
+                  Подходящая процедура зависит от суммы долга, просрочки, дохода и имущества. На
+                  консультации мы честно скажем, какая из них вам подходит и подходит ли банкротство
+                  вообще.
+                </p>
+              </div>
+              <span className="hidden shrink-0 text-sm font-bold text-ink2 sm:block">
+                03 направления
+              </span>
             </div>
-            <span className="hidden shrink-0 text-sm font-bold text-brand/60 sm:block">
-              03 направления
-            </span>
-          </div>
 
-          <ol className="grid gap-5 md:grid-cols-3">
-            {PROCEDURES.map((p, i) => (
-              <li key={p.title} className="flex gap-4 rounded-[26px] bg-brand p-7 text-paper">
-                <span className="w-7 shrink-0 font-display text-3xl font-bold leading-none text-accent">
-                  {i + 1}
-                </span>
-                <div>
-                  <h3 className="font-display text-lg font-bold leading-tight">{p.title}</h3>
-                  <p className="mt-2 text-sm leading-snug text-paper/75">{p.text}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-4 text-xs leading-snug text-brand/60">
-            Закон РК «О восстановлении платёжеспособности и банкротстве граждан Республики
-            Казахстан»
-          </p>
+            <div className="mt-8 grid gap-5 md:grid-cols-3">
+              {PROCEDURES.map((p) => (
+                <article key={p.title} className={`${CARD} border-t-[5px] border-t-dawn`}>
+                  <h3 className={H3}>{p.title}</h3>
+                  <p className="mt-2 text-ink2">{p.text}</p>
+                </article>
+              ))}
+            </div>
+            <p className="mt-3 text-sm text-ink2">
+              Закон РК «О восстановлении платёжеспособности и банкротстве граждан Республики
+              Казахстан»
+            </p>
 
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {SERVICES.map((s) => (
-              <article
-                key={s.num}
-                className={
-                  s.tone === "lime"
-                    ? "flex flex-col rounded-[26px] bg-lime p-7 transition-transform hover:-translate-y-1"
-                    : "flex flex-col rounded-[26px] border-2 border-brand/10 bg-white p-7 transition-all hover:-translate-y-1 hover:border-accent"
-                }
-              >
-                <div
-                  className={`mb-4 text-sm font-bold ${s.tone === "lime" ? "text-brand" : "text-accent-strong"}`}
-                >
-                  {s.num}
-                </div>
-                <h3 className="mb-3 font-display text-2xl font-bold tracking-tight">{s.title}</h3>
-                <p className="flex-1 text-[15px] leading-snug text-brand/80">{s.text}</p>
-                <a
-                  href="#contact"
-                  className={`mt-5 inline-block py-1 text-sm font-bold ${s.tone === "lime" ? "text-brand" : "text-accent-strong"}`}
-                >
-                  Обсудить мою ситуацию →
-                </a>
-              </article>
-            ))}
+            <div className="mt-8 grid gap-5 md:grid-cols-3">
+              {SERVICES.map((s) => (
+                <article key={s.title} className={`${CARD} flex flex-col`}>
+                  <h3 className={H3}>{s.title}</h3>
+                  <p className="mt-2 flex-1 text-ink2">{s.text}</p>
+                  <a
+                    href="#contact"
+                    className="mt-4 inline-block font-bold text-dawn-dark hover:underline"
+                  >
+                    Обсудить мою ситуацию →
+                  </a>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* Other legal services */}
-        <section
-          id="services"
-          className="scroll-mt-20 border-y-2 border-brand/10 bg-white py-16 sm:py-20"
-        >
-          <div className={MAX}>
-            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              Юридическая помощь по другим вопросам
-            </h2>
-            <p className="mt-5 max-w-2xl text-lg leading-snug text-brand/75">
+        {/* Другие услуги */}
+        <section id="services" className={`${SECTION} border-y border-line bg-white`}>
+          <div className={WRAP}>
+            <h2 className={H2}>Юридическая помощь по другим вопросам</h2>
+            <p className={LEAD}>
               Если у вас не долги, а другая правовая задача, мы тоже поможем: от консультации до
               представительства в суде.
             </p>
-            <dl className="mt-10 grid gap-x-10 md:grid-cols-2">
+            <dl className="mt-7 grid gap-x-10 md:grid-cols-2">
               {OTHER_SERVICES.map((s) => (
-                <div key={s.title} className="border-t-2 border-brand/10 py-5">
-                  <dt className="font-display text-xl font-bold tracking-tight">{s.title}</dt>
-                  <dd className="mt-2 text-[15px] leading-snug text-brand/80">{s.text}</dd>
+                <div key={s.title} className="border-t border-line pb-[18px] pt-[18px]">
+                  <dt className="font-serif text-[20px] font-bold">{s.title}</dt>
+                  <dd className="mt-1 text-ink2">{s.text}</dd>
                 </div>
               ))}
             </dl>
           </div>
         </section>
 
-        {/* Process */}
-        <section id="process" className="scroll-mt-20 bg-brand py-16 text-paper sm:py-20">
-          <div className={MAX}>
-            <h2 className="mb-10 font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              Как мы работаем
-            </h2>
-            <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {STEPS.map((step) => (
-                <li
-                  key={step.n}
-                  className={
-                    step.accent
-                      ? "rounded-2xl bg-accent-strong p-6 text-white"
-                      : "rounded-2xl border border-white/10 bg-white/5 p-6"
-                  }
-                >
+        {/* Как мы работаем */}
+        <section id="process" className={SECTION}>
+          <div className={WRAP}>
+            <h2 className={H2}>Как мы работаем</h2>
+            <ol className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {STEPS.map((step, i) => (
+                <li key={step.title} className="border-t-[3px] border-green pt-3.5">
                   <span
-                    className={`grid size-9 place-items-center rounded-full text-sm font-bold ${
-                      step.accent ? "bg-white text-accent-strong" : "bg-lime text-brand"
-                    }`}
+                    className="block font-serif text-[34px] leading-tight text-green"
+                    aria-hidden="true"
                   >
-                    {step.n}
+                    {i + 1}
                   </span>
-                  <h3 className="mt-4 text-lg font-bold">{step.title}</h3>
-                  <p
-                    className={`mt-2 text-sm leading-snug ${step.accent ? "text-white" : "text-paper/75"}`}
-                  >
-                    {step.text}
-                  </p>
+                  <h3 className="mt-1 font-serif text-[20px] font-bold">{step.title}</h3>
+                  <p className="mt-1.5 text-base text-ink2">{step.text}</p>
                 </li>
               ))}
             </ol>
           </div>
         </section>
 
-        {/* Why */}
-        <section id="why" className={`${MAX} scroll-mt-20 py-16 sm:py-20`}>
-          <div className="grid gap-10 lg:grid-cols-12">
-            <div className="lg:col-span-4">
-              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                Почему JANA START
-              </h2>
-              <p className="mt-5 text-lg leading-snug text-brand/75">
-                Мы строим работу на четырёх правилах.
-              </p>
-            </div>
-            <ul className="grid gap-5 sm:grid-cols-2 lg:col-span-8">
-              {WHY.map((w, i) => (
+        {/* Почему JANA START */}
+        <section id="why" className={`${SECTION} bg-ink text-white`}>
+          <div className={WRAP}>
+            <h2 className={H2}>Почему JANA START</h2>
+            <p className={`${LEAD} text-mist`}>Мы строим работу на четырёх правилах.</p>
+            <ul className="mt-8 grid gap-5 md:grid-cols-2">
+              {WHY.map((w) => (
                 <li
                   key={w.title}
-                  className={
-                    i === 0
-                      ? "rounded-[26px] bg-lime p-7"
-                      : "rounded-[26px] border-2 border-brand/10 bg-white p-7"
-                  }
+                  className="rounded-[10px] border border-white/15 bg-white/[0.06] p-[26px]"
                 >
-                  <h3 className="font-display text-xl font-bold tracking-tight">{w.title}</h3>
-                  <p className="mt-3 text-[15px] leading-snug text-brand/80">{w.text}</p>
+                  <h3 className={H3}>{w.title}</h3>
+                  <p className="mt-2 text-mist">{w.text}</p>
                 </li>
               ))}
             </ul>
@@ -553,96 +505,85 @@ export function App() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className={`${MAX} scroll-mt-20 pb-16 sm:pb-20`}>
-          <div className="grid gap-10 lg:grid-cols-12">
-            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:col-span-4">
-              Частые вопросы
-            </h2>
-            <div className="space-y-3 lg:col-span-8">
+        <section id="faq" className={SECTION}>
+          <div className={WRAP}>
+            <h2 className={H2}>Частые вопросы</h2>
+            <div className="mt-7 max-w-[820px] space-y-2.5">
               {FAQ.map((item) => (
-                <details
-                  key={item.q}
-                  className="group rounded-2xl border-2 border-brand/10 bg-white open:border-brand/25"
-                >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 font-display text-lg font-bold [&::-webkit-details-marker]:hidden">
+                <details key={item.q} className="group rounded-lg border border-line bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-[22px] py-[18px] font-bold [&::-webkit-details-marker]:hidden">
                     {item.q}
-                    <span
-                      aria-hidden="true"
-                      className="grid size-8 shrink-0 place-items-center rounded-full bg-lime text-xl leading-none transition-transform group-open:rotate-45"
-                    >
-                      +
+                    <span aria-hidden="true" className="shrink-0 text-2xl leading-none text-green">
+                      <span className="group-open:hidden">+</span>
+                      <span className="hidden group-open:inline">−</span>
                     </span>
                   </summary>
-                  <p className="px-5 pb-5 text-[15px] leading-relaxed text-brand/80">{item.a}</p>
+                  <p className="px-[22px] pb-[18px] text-ink2">{item.a}</p>
                 </details>
               ))}
             </div>
           </div>
         </section>
 
-        {/* CTA + Contact */}
-        <section id="contact" className="scroll-mt-20 border-t-2 border-brand/10 py-16 sm:py-20">
-          <div className={`${MAX} grid items-center gap-10 lg:grid-cols-2`}>
+        {/* Контакты и форма */}
+        <section id="contact" className={`${SECTION} border-t border-line bg-white`}>
+          <div className={`${WRAP} grid items-start gap-12 md:grid-cols-2`}>
             <div>
-              <h2 className="font-display text-3xl font-bold leading-[1] tracking-tight sm:text-4xl md:text-5xl">
+              <h2 className={H2}>
                 Оставьте заявку —
                 <br />
-                <span className="text-accent">первая консультация бесплатно.</span>
+                <span className="text-dawn-dark">первая консультация бесплатно.</span>
               </h2>
-              <ul className="mt-8 space-y-4">
-                <ContactRow badge="А" title={SITE.address} note={SITE.addressNote} />
-                <ContactRow
-                  badge="Т"
-                  title={
-                    <a href={SITE.phoneHref} onClick={onPhoneClick}>
-                      {SITE.phone}
-                    </a>
-                  }
-                  note={
+              <ul className="mt-6 space-y-4">
+                <ContactRow label="Адрес">
+                  {SITE.address}
+                  {SITE.addressNote && (
                     <>
-                      <a
-                        href={`mailto:${SITE.email}`}
-                        className="underline-offset-2 hover:underline"
-                      >
-                        {SITE.email}
-                      </a>{" "}
-                      · {SITE.hours}
+                      <br />
+                      {SITE.addressNote}
                     </>
-                  }
-                />
-                <ContactRow
-                  badge="W"
-                  title={
-                    <a
-                      href={whatsappLink()}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={onWhatsappClick}
-                    >
-                      {SITE.whatsappLabel}
-                    </a>
-                  }
-                  note="WhatsApp · отвечаем быстрее всего"
-                />
+                  )}
+                </ContactRow>
+                <ContactRow label="Телефон">
+                  <a href={SITE.phoneHref} onClick={onPhoneClick} className="hover:underline">
+                    {SITE.phone}
+                  </a>
+                </ContactRow>
+                <ContactRow label="WhatsApp">
+                  <a
+                    href={whatsappLink()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={onWhatsappClick}
+                    className="hover:underline"
+                  >
+                    {SITE.whatsappLabel}
+                  </a>
+                  , отвечаем быстрее всего
+                </ContactRow>
+                <ContactRow label="E-mail">
+                  <a href={`mailto:${SITE.email}`} className="hover:underline">
+                    {SITE.email}
+                  </a>
+                  , {SITE.hours}
+                </ContactRow>
               </ul>
             </div>
 
             {submitted ? (
               <div
-                className="rounded-[28px] border-2 border-brand/10 bg-white p-10 text-center"
+                className="rounded-[10px] border border-line bg-paper p-[26px] text-center"
                 role="status"
               >
-                <span className="mx-auto grid size-14 place-items-center rounded-full bg-lime font-display text-2xl font-bold">
+                <span className="mx-auto grid size-14 place-items-center rounded-full bg-green font-serif text-2xl font-bold text-white">
                   ✓
                 </span>
-                <h3 className="mt-5 font-display text-2xl font-bold tracking-tight">
-                  Почти готово
-                </h3>
-                <p className="mt-3 text-sm leading-snug text-brand/80">
+                <h3 className={`${H3} mt-5`}>Почти готово</h3>
+                <p className="mt-3 text-ink2">
                   {name.trim()}, мы открыли WhatsApp с готовым сообщением — просто нажмите
                   «Отправить». Если окно не открылось,{" "}
                   <a
-                    className="font-bold text-accent-strong underline"
+                    className="font-bold text-dawn-dark underline"
                     href={whatsappLink(
                       `Здравствуйте! Хочу получить бесплатную консультацию. Имя: ${name.trim()}, телефон: ${phone.trim()}, тема: ${topic}`,
                     )}
@@ -653,7 +594,7 @@ export function App() {
                     нажмите здесь
                   </a>{" "}
                   или позвоните:{" "}
-                  <a href={SITE.phoneHref} onClick={onPhoneClick} className="font-bold">
+                  <a href={SITE.phoneHref} onClick={onPhoneClick} className="font-bold text-ink">
                     {SITE.phone}
                   </a>
                   .
@@ -663,7 +604,7 @@ export function App() {
               <form
                 onSubmit={handleSubmit}
                 noValidate
-                className="space-y-4 rounded-[28px] border-2 border-brand/10 bg-white p-6 sm:p-7"
+                className="space-y-3.5 rounded-[10px] border border-line bg-paper p-[26px]"
               >
                 <Field id="name" label="Ваше имя">
                   <input
@@ -689,14 +630,12 @@ export function App() {
                   />
                 </Field>
                 <fieldset>
-                  <legend className="text-xs font-bold uppercase tracking-wider text-brand/70">
-                    Кто вы
-                  </legend>
-                  <div className="mt-2 grid grid-cols-3 gap-2">
+                  <legend className="text-[15px] font-bold">Кто вы</legend>
+                  <div className="mt-1.5 grid grid-cols-3 gap-2">
                     {WHO_OPTIONS.map((opt) => (
                       <label
                         key={opt}
-                        className="cursor-pointer rounded-xl border-2 border-brand/15 px-2 py-3 text-center text-sm font-semibold has-checked:border-brand has-checked:bg-brand has-checked:text-lime has-focus-visible:outline-2 has-focus-visible:outline-accent"
+                        className="cursor-pointer rounded-md border border-[#b9c1d3] bg-white px-2 py-3 text-center text-sm font-semibold has-checked:border-ink has-checked:bg-ink has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-dawn"
                       >
                         <input
                           type="radio"
@@ -726,32 +665,27 @@ export function App() {
                     ))}
                   </select>
                 </Field>
-                <label htmlFor="agree" className="flex cursor-pointer items-start gap-3 py-1">
+                <label htmlFor="agree" className="flex cursor-pointer items-start gap-2.5 text-sm">
                   <input
                     id="agree"
                     type="checkbox"
                     checked={agree}
                     onChange={(e) => setAgree(e.target.checked)}
-                    className="mt-0.5 size-5 shrink-0 accent-accent"
+                    className="mt-1 size-4 shrink-0 accent-green"
                   />
-                  <span className="text-xs leading-snug text-brand/70">
-                    Согласен(на) на сбор и обработку персональных данных
-                  </span>
+                  <span>Согласен(на) на сбор и обработку персональных данных</span>
                 </label>
                 {error && (
-                  <p className="text-sm font-semibold text-accent-strong" role="alert">
+                  <p className="text-sm font-semibold text-[#b42318]" role="alert">
                     {error}
                   </p>
                 )}
-                <button
-                  type="submit"
-                  className="w-full rounded-full bg-accent-strong py-4 font-bold text-white shadow-[4px_4px_0_0_var(--color-brand)] transition-colors hover:bg-brand hover:text-lime"
-                >
+                <button type="submit" className={`${BTN_DARK} w-full text-[17px]`}>
                   Получить консультацию в WhatsApp
                 </button>
-                <p className="text-center text-xs text-brand/60">
+                <p className="text-center text-[15px] text-ink2">
                   Или позвоните:{" "}
-                  <a href={SITE.phoneHref} onClick={onPhoneClick} className="font-bold text-brand">
+                  <a href={SITE.phoneHref} onClick={onPhoneClick} className="font-bold text-ink">
                     {SITE.phone}
                   </a>
                 </p>
@@ -761,39 +695,35 @@ export function App() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-brand text-paper">
-        <div
-          className={`${MAX} flex flex-col gap-6 py-10 md:flex-row md:items-end md:justify-between`}
-        >
-          <div className="flex items-center gap-3">
-            <Logo inverted />
-            <div className="text-sm leading-snug">
-              <p className="font-display font-bold">
-                JANA <span className="text-lime">START</span>
-              </p>
-              <p className="text-paper/65">
-                {SITE.legalName} · БИН {SITE.bin}
-              </p>
-            </div>
-          </div>
-          <div className="text-xs leading-relaxed text-paper/65 md:text-right">
-            <p>© {SITE.foundedYear} JANA START. Все права защищены.</p>
-            <p>Сайт носит информационный характер и не является публичной офертой.</p>
-          </div>
+      {/* Подвал */}
+      <footer className="bg-ink py-9 text-sm text-footer">
+        <div className={WRAP}>
+          <a
+            href="#top"
+            className="mb-2.5 inline-flex items-center gap-2.5 font-serif text-lg font-bold text-white"
+          >
+            <img src="./logo-mark.png" alt="" width="34" height="45" className="h-9 w-auto" />
+            <span>
+              JANA <span className="text-dawn">START</span>
+            </span>
+          </a>
+          <p>
+            {SITE.legalName}, БИН {SITE.bin}
+          </p>
+          <p className="mt-1.5">© {SITE.foundedYear} JANA START. Все права защищены.</p>
+          <p className="mt-1.5">
+            Сайт носит информационный характер и не является публичной офертой.
+          </p>
         </div>
       </footer>
     </div>
   );
 }
 
-const INPUT =
-  "mt-1 w-full rounded-xl border-2 border-brand/15 bg-white px-4 py-3 text-base focus:border-accent focus:outline-none";
-
 function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label htmlFor={id} className="text-xs font-bold uppercase tracking-wider text-brand/70">
+      <label htmlFor={id} className="text-[15px] font-bold">
         {label}
       </label>
       {children}
@@ -801,40 +731,11 @@ function Field({ id, label, children }: { id: string; label: string; children: R
   );
 }
 
-function ContactRow({
-  badge,
-  title,
-  note,
-}: {
-  badge: string;
-  title: React.ReactNode;
-  note: React.ReactNode;
-}) {
+function ContactRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <li className="flex items-center gap-3">
-      <span
-        aria-hidden="true"
-        className="grid size-11 shrink-0 place-items-center rounded-full bg-brand font-bold text-lime"
-      >
-        {badge}
-      </span>
-      <div>
-        <p className="text-sm font-bold">{title}</p>
-        <p className="text-sm text-brand/70">{note}</p>
-      </div>
+    <li>
+      <b>{label}</b>
+      <small className="block text-[15px] text-ink2">{children}</small>
     </li>
-  );
-}
-
-function Logo({ inverted = false }: { inverted?: boolean }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`flex size-10 items-center justify-center rounded-full font-display text-base font-bold ${
-        inverted ? "bg-lime text-brand" : "bg-brand text-lime"
-      }`}
-    >
-      J<span className="text-accent">S</span>
-    </span>
   );
 }

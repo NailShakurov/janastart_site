@@ -1,22 +1,30 @@
 @import "tailwindcss";
 
 /*
- * JanaStart — «Brutalist Financial».
- * Палитра: тёмно-синий (brand), коралл (accent), тёплая бумага (paper), лайм (lime).
- * Шрифты: Unbounded (заголовки), Manrope (текст) — оба с кириллицей.
+ * JANA START — стиль по макету janastart-index.html.
+ * Палитра: тёмно-синий ink (шапка, hero, подвал, текст), «рассвет» dawn (CTA, факты),
+ * зелёный green (номера шагов, «+» в FAQ), светлый фон paper, линии line.
+ * Шрифты: Georgia (заголовки), системный sans (текст). Веб-шрифты не подключаются.
  */
 
 @theme {
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
   --animate-marquee: marquee 40s linear infinite;
 
-  --color-brand: oklch(0.211 0.04 272.2);
-  --color-lime: oklch(0.89 0.18 119.6);
-  --color-paper: oklch(0.959 0.01 87.5);
-  /* accent — для крупных акцентов; accent-strong — для мелкого текста и кнопок (контраст ≥ 4.5:1) */
-  --color-accent: oklch(0.675 0.214 32.5);
-  --color-accent-strong: oklch(0.55 0.19 32);
+  --color-ink: #141a33;
+  --color-ink2: #3d4462;
+  --color-paper: #f6f8fb;
+  --color-line: #dde2ec;
+  --color-dawn: #f2b84b;
+  --color-dawn-hover: #ffd27a;
+  /* тёмный вариант «рассвета» для текста на светлом фоне (контраст ≥ 4.5:1) */
+  --color-dawn-dark: #8a5a00;
+  --color-green: #1f6b5a;
+  /* светлый текст на тёмном фоне */
+  --color-mist: #c3c9e0;
+  --color-mist-light: #d6dbee;
+  --color-footer: #aab1cc;
 }
 
 @keyframes marquee {
@@ -31,17 +39,27 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 72px;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
     background-color: var(--color-paper);
-    color: var(--color-brand);
+    color: var(--color-ink);
     font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    line-height: 1.15;
   }
 
   :focus-visible {
-    outline: 3px solid var(--color-accent);
+    outline: 3px solid var(--color-dawn);
     outline-offset: 2px;
   }
 

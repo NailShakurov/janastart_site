@@ -1,21 +1,43 @@
 import { useState, type FormEvent } from "react";
 import { SITE, whatsappLink } from "./site";
+import { getUtm, track } from "./tracking";
 
 const NAV = [
+  { label: "Банкротство", href: "#bankruptcy" },
   { label: "Услуги", href: "#services" },
-  { label: "Процедуры", href: "#procedures" },
   { label: "Как работаем", href: "#process" },
   { label: "Вопросы", href: "#faq" },
   { label: "Контакты", href: "#contact" },
 ];
 
 const MARQUEE = [
+  "Банкротство граждан, ИП и компаний",
   "Защита от коллекторов",
-  "Физлица и ИП",
-  "Юридические лица",
-  "Списание долгов по закону РК",
-  "Единственное жильё остаётся у вас",
+  "Семейные и трудовые дела",
+  "Недвижимость и наследство",
+  "Бизнес и договоры",
   "Новый финансовый старт",
+];
+
+const FACTS = [
+  { value: "20 лет", label: "юридической практики" },
+  { value: "0 ₸", label: "первая консультация" },
+  { value: "В договоре", label: "фиксированная стоимость услуг" },
+];
+
+const PROCEDURES = [
+  {
+    title: "Внесудебное банкротство",
+    text: "Упрощённая процедура для небольших долгов при отсутствии имущества.",
+  },
+  {
+    title: "Восстановление платёжеспособности",
+    text: "Через суд: план погашения долгов, если у вас есть доход.",
+  },
+  {
+    title: "Судебное банкротство",
+    text: "Через суд: списание долгов, когда погасить их нет возможности.",
+  },
 ];
 
 const SERVICES = [
@@ -23,34 +45,46 @@ const SERVICES = [
     num: "01",
     title: "Физические лица",
     tone: "card",
-    text: "Банкротство граждан по закону РК: кредиты, микрозаймы, задолженность по налогам и штрафам. Сохраняем единственное жильё и средства на жизнь.",
+    text: "Кредиты, микрозаймы, задолженность по налогам и штрафам. Разберём, что будет с жильём и доходом, до начала работы.",
   },
   {
     num: "02",
-    title: "Юрлица и ИП",
+    title: "ИП и компании",
     tone: "lime",
-    text: "Реабилитация или банкротство компании. Минимизируем риски субсидиарной ответственности учредителей и выстраиваем прозрачную работу с кредиторами.",
+    text: "Реабилитация или банкротство бизнеса. Оцениваем риски для учредителей и выстраиваем работу с кредиторами.",
   },
   {
     num: "03",
-    title: "Досудебная защита",
+    title: "Защита от коллекторов",
     tone: "card",
-    text: "Останавливаем давление коллекторов, проверяем законность начислений, ведём переговоры с банками о реструктуризации.",
+    text: "Проверяем законность начислений, отвечаем на давление коллекторов и ведём переговоры с банками о реструктуризации.",
   },
 ] as const;
 
-const PROCEDURES = [
+const OTHER_SERVICES = [
   {
-    title: "Внесудебное банкротство",
-    text: "Через портал eGov — для небольших долгов при отсутствии имущества.",
+    title: "Семейные дела",
+    text: "Развод, алименты, раздел имущества, место жительства ребёнка.",
   },
   {
-    title: "Восстановление платёжеспособности",
-    text: "Через суд — план погашения долгов на срок до 5 лет при наличии дохода.",
+    title: "Недвижимость и наследство",
+    text: "Проверка сделок, споры по квартирам, вступление в наследство.",
   },
   {
-    title: "Судебное банкротство",
-    text: "Через суд — списание долгов, когда погасить их нет возможности.",
+    title: "Трудовые споры",
+    text: "Незаконное увольнение, невыплаченная зарплата, трудовые договоры.",
+  },
+  {
+    title: "Бизнес и договоры",
+    text: "Регистрация, договоры, сопровождение ИП и ТОО, споры с контрагентами.",
+  },
+  {
+    title: "Представительство в суде",
+    text: "Подготовка исков и защита ваших интересов на всех стадиях процесса.",
+  },
+  {
+    title: "Консультации",
+    text: "Разовая оценка вашей ситуации и понятный план действий.",
   },
 ];
 
@@ -58,23 +92,42 @@ const STEPS = [
   {
     n: "1",
     title: "Анализ ситуации",
-    text: "Бесплатно разбираем долги, доходы и имущество. Говорим честно, подходит ли вам банкротство.",
+    text: "Бесплатно разбираем долги, доходы и имущество. Говорим честно, что возможно.",
   },
   {
     n: "2",
-    title: "Выбор процедуры",
-    text: "Подбираем процедуру, собираем документы и фиксируем стоимость в договоре.",
+    title: "План и договор",
+    text: "Выбираем процедуру, собираем документы, фиксируем стоимость в договоре.",
   },
   {
     n: "3",
     title: "Сопровождение",
-    text: "Подаём заявление, общаемся с кредиторами и представляем вас в суде.",
+    text: "Подаём заявление, общаемся с кредиторами, представляем вас в суде.",
   },
   {
     n: "4",
     title: "Новый старт",
-    text: "Долги списаны или реструктурированы. Вы начинаете с чистого листа.",
+    text: "Вы получаете результат по процедуре и понимаете, что делать дальше.",
     accent: true,
+  },
+];
+
+const WHY = [
+  {
+    title: "20 лет практики",
+    text: "Наши юристы работают в праве два десятилетия и знают, как устроены суды и кредиторы.",
+  },
+  {
+    title: "Честная оценка",
+    text: "Если банкротство вам не нужно или не поможет, мы скажем об этом сразу.",
+  },
+  {
+    title: "Стоимость в договоре",
+    text: "Цена фиксируется до начала работы. Скрытых платежей нет.",
+  },
+  {
+    title: "Простым языком",
+    text: "Объясняем этапы и последствия так, чтобы вы понимали каждый шаг.",
   },
 ];
 
@@ -99,7 +152,38 @@ const FAQ = [
     q: "Сколько стоят ваши услуги?",
     a: "Первая консультация бесплатна. Стоимость сопровождения зависит от процедуры и сложности дела и фиксируется в договоре — без скрытых платежей.",
   },
+  {
+    q: "Вы работаете только с банкротством?",
+    a: "Нет. Мы также ведём семейные, трудовые, имущественные и корпоративные дела и представляем клиентов в суде.",
+  },
 ];
+
+const WHO_OPTIONS = ["Физлицо", "ИП", "Компания"] as const;
+
+const TOPIC_OPTIONS = [
+  "Банкротство физлица",
+  "Банкротство ИП или компании",
+  "Долги и коллекторы",
+  "Другой юридический вопрос",
+] as const;
+
+// Микроразметка LegalService (F-06). Значения берутся из site.ts.
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "LegalService",
+  name: SITE.brand,
+  url: "https://janastart.kz/",
+  telephone: SITE.phoneHref.replace("tel:", ""),
+  email: SITE.email,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: SITE.address,
+    addressLocality: SITE.city,
+    addressCountry: "KZ",
+  },
+  areaServed: SITE.city,
+  openingHours: "Mo-Fr 09:00-19:00",
+};
 
 const MAX = "mx-auto max-w-7xl px-4 sm:px-5";
 
@@ -107,29 +191,45 @@ export function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [who, setWho] = useState("Физлицо");
+  const [who, setWho] = useState<string>(WHO_OPTIONS[0]);
+  const [topic, setTopic] = useState<string>(TOPIC_OPTIONS[0]);
   const [agree, setAgree] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || phone.replace(/\D/g, "").length < 10) {
-      setError("Укажите имя и номер телефона — иначе мы не сможем связаться с вами.");
-      return;
-    }
-    if (!agree) {
-      setError("Нужно согласие на обработку персональных данных.");
+    const digits = phone.replace(/\D/g, "");
+    if (!name.trim() || digits.length < 10 || digits.length > 11 || !agree) {
+      setError("Заполните имя и телефон и подтвердите согласие.");
       return;
     }
     setError(null);
-    const text = `Здравствуйте! Хочу консультацию по банкротству.\nИмя: ${name.trim()}\nТелефон: ${phone.trim()}\nКто: ${who}`;
+    const utm = getUtm();
+    const source = Object.entries(utm)
+      .map(([k, v]) => `${k}=${v}`)
+      .join(", ");
+    const text = [
+      "Здравствуйте! Хочу получить бесплатную консультацию.",
+      `Имя: ${name.trim()}`,
+      `Телефон: ${phone.trim()}`,
+      `Кто: ${who}`,
+      `Тема: ${topic}`,
+      source ? `Источник: ${source}` : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    track("form_submit", { who, topic });
     window.open(whatsappLink(text), "_blank", "noopener");
     setSubmitted(true);
   };
 
+  const onWhatsappClick = () => track("whatsapp_click");
+  const onPhoneClick = () => track("phone_click");
+
   return (
     <div className="min-h-screen overflow-x-clip bg-paper font-sans text-brand">
+      <script type="application/ld+json">{JSON.stringify(JSON_LD)}</script>
       <a
         href="#main"
         className="sr-only z-50 rounded-full bg-brand px-4 py-2 text-lime focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
@@ -140,11 +240,11 @@ export function App() {
       {/* Topbar */}
       <header className="sticky top-0 z-40 border-b-2 border-brand/10 bg-paper/90 backdrop-blur">
         <div className={`${MAX} flex items-center justify-between gap-4 py-3`}>
-          <a href="#top" className="flex items-center gap-3" aria-label="JanaStart — на главную">
+          <a href="#top" className="flex items-center gap-3" aria-label="JANA START — на главную">
             <Logo />
             <span className="leading-tight">
               <span className="block font-display text-[15px] font-bold tracking-tight">
-                Jana<span className="text-accent">Start</span>
+                JANA <span className="text-accent">START</span>
               </span>
               <span className="block text-[11px] uppercase tracking-[0.18em] text-brand/70">
                 {SITE.tagline}
@@ -162,7 +262,11 @@ export function App() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <a href={SITE.phoneHref} className="hidden text-sm font-bold tracking-tight xl:block">
+            <a
+              href={SITE.phoneHref}
+              onClick={onPhoneClick}
+              className="hidden text-sm font-bold tracking-tight xl:block"
+            >
               {SITE.phone}
             </a>
             <a
@@ -216,7 +320,11 @@ export function App() {
                   {item.label}
                 </a>
               ))}
-              <a href={SITE.phoneHref} className="py-4 font-bold text-accent-strong">
+              <a
+                href={SITE.phoneHref}
+                onClick={onPhoneClick}
+                className="py-4 font-bold text-accent-strong"
+              >
                 {SITE.phone}
               </a>
             </div>
@@ -229,22 +337,17 @@ export function App() {
         <section id="top" className="relative">
           <div className={`${MAX} grid items-end gap-10 pb-12 pt-12 sm:pt-16 lg:grid-cols-12`}>
             <div className="lg:col-span-7">
-              <div className="mb-7 inline-flex items-center gap-2 rounded-full bg-lime px-4 py-2 text-xs font-bold uppercase tracking-[0.15em]">
-                <span className="size-2 rounded-full bg-accent" />
-                Jana — значит «новый»
-              </div>
               <h1
                 className="font-display font-bold leading-[0.95] tracking-tight"
                 style={{ fontSize: "clamp(2.5rem, 6.4vw, 5rem)" }}
               >
-                Долги <span className="text-accent">—</span>
+                Новый старт
                 <br />
-                <span className="whitespace-nowrap">не приговор.</span>
+                <span className="text-accent">без долгов</span>
               </h1>
               <p className="mt-7 max-w-xl text-lg font-medium leading-snug text-brand/75 md:text-xl">
-                JanaStart помогает гражданам, ИП и компаниям законно выйти из долгов по процедурам
-                банкротства Республики Казахстан. Бесплатный анализ ситуации и сопровождение — от
-                первой консультации до решения.
+                Jana по-казахски значит «новый». Мы помогаем гражданам, ИП и компаниям выйти из
+                долгов по закону и решаем другие юридические вопросы. Юристы с 20-летним стажем.
               </p>
               <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
                 <a
@@ -254,37 +357,31 @@ export function App() {
                   Бесплатная консультация →
                 </a>
                 <a
-                  href="#process"
+                  href={whatsappLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={onWhatsappClick}
                   className="rounded-full border-2 border-brand px-8 py-5 text-center font-bold transition-colors hover:bg-brand hover:text-paper"
                 >
-                  Как это работает
+                  Написать в WhatsApp
                 </a>
               </div>
             </div>
 
-            <div id="procedures" className="scroll-mt-24 lg:col-span-5">
-              <div className="rounded-[28px] bg-brand p-7 text-paper shadow-[8px_8px_0_0_var(--color-lime)]">
-                <p className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-lime">
-                  3 процедуры по закону РК
-                </p>
-                <ol className="space-y-5">
-                  {PROCEDURES.map((p, i) => (
-                    <li key={p.title} className="flex gap-4">
-                      <span className="w-7 shrink-0 font-display text-3xl font-bold leading-none text-accent">
-                        {i + 1}
-                      </span>
-                      <div>
-                        <p className="font-display text-lg font-bold leading-tight">{p.title}</p>
-                        <p className="mt-1 text-sm leading-snug text-paper/75">{p.text}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-                <p className="mt-6 border-t border-white/15 pt-4 text-xs leading-snug text-paper/65">
-                  Закон РК «О восстановлении платёжеспособности и банкротстве граждан Республики
-                  Казахстан»
-                </p>
-              </div>
+            <div className="lg:col-span-5">
+              <ul className="grid gap-3 rounded-[28px] bg-brand p-7 text-paper shadow-[8px_8px_0_0_var(--color-lime)] sm:grid-cols-3 lg:grid-cols-1">
+                {FACTS.map((f) => (
+                  <li
+                    key={f.value}
+                    className="border-t border-white/15 pt-4 first:border-0 first:pt-0"
+                  >
+                    <p className="font-display text-3xl font-bold leading-none text-lime">
+                      {f.value}
+                    </p>
+                    <p className="mt-2 text-sm leading-snug text-paper/75">{f.label}</p>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>
@@ -301,16 +398,45 @@ export function App() {
           </div>
         </div>
 
-        {/* Services */}
-        <section id="services" className={`${MAX} scroll-mt-20 py-16 sm:py-20`}>
+        {/* Bankruptcy */}
+        <section id="bankruptcy" className={`${MAX} scroll-mt-20 py-16 sm:py-20`}>
+          {/* Старый якорь #procedures — псевдоним на этот блок (F-05) */}
+          <span id="procedures" className="block scroll-mt-20" aria-hidden="true" />
           <div className="mb-9 flex items-end justify-between gap-4">
-            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              Что мы берём на себя
-            </h2>
-            <span className="hidden text-sm font-bold text-brand/60 sm:block">03 направления</span>
+            <div>
+              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Банкротство по закону Казахстана
+              </h2>
+              <p className="mt-5 max-w-2xl text-lg leading-snug text-brand/75">
+                Подходящая процедура зависит от суммы долга, просрочки, дохода и имущества. На
+                консультации мы честно скажем, какая из них вам подходит и подходит ли банкротство
+                вообще.
+              </p>
+            </div>
+            <span className="hidden shrink-0 text-sm font-bold text-brand/60 sm:block">
+              03 направления
+            </span>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
+          <ol className="grid gap-5 md:grid-cols-3">
+            {PROCEDURES.map((p, i) => (
+              <li key={p.title} className="flex gap-4 rounded-[26px] bg-brand p-7 text-paper">
+                <span className="w-7 shrink-0 font-display text-3xl font-bold leading-none text-accent">
+                  {i + 1}
+                </span>
+                <div>
+                  <h3 className="font-display text-lg font-bold leading-tight">{p.title}</h3>
+                  <p className="mt-2 text-sm leading-snug text-paper/75">{p.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-4 text-xs leading-snug text-brand/60">
+            Закон РК «О восстановлении платёжеспособности и банкротстве граждан Республики
+            Казахстан»
+          </p>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
             {SERVICES.map((s) => (
               <article
                 key={s.num}
@@ -338,11 +464,35 @@ export function App() {
           </div>
         </section>
 
+        {/* Other legal services */}
+        <section
+          id="services"
+          className="scroll-mt-20 border-y-2 border-brand/10 bg-white py-16 sm:py-20"
+        >
+          <div className={MAX}>
+            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+              Юридическая помощь по другим вопросам
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-snug text-brand/75">
+              Если у вас не долги, а другая правовая задача, мы тоже поможем: от консультации до
+              представительства в суде.
+            </p>
+            <dl className="mt-10 grid gap-x-10 md:grid-cols-2">
+              {OTHER_SERVICES.map((s) => (
+                <div key={s.title} className="border-t-2 border-brand/10 py-5">
+                  <dt className="font-display text-xl font-bold tracking-tight">{s.title}</dt>
+                  <dd className="mt-2 text-[15px] leading-snug text-brand/80">{s.text}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+
         {/* Process */}
         <section id="process" className="scroll-mt-20 bg-brand py-16 text-paper sm:py-20">
           <div className={MAX}>
             <h2 className="mb-10 font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              Как вы выходите из долгов
+              Как мы работаем
             </h2>
             <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {STEPS.map((step) => (
@@ -373,8 +523,37 @@ export function App() {
           </div>
         </section>
 
+        {/* Why */}
+        <section id="why" className={`${MAX} scroll-mt-20 py-16 sm:py-20`}>
+          <div className="grid gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-4">
+              <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Почему JANA START
+              </h2>
+              <p className="mt-5 text-lg leading-snug text-brand/75">
+                Мы строим работу на четырёх правилах.
+              </p>
+            </div>
+            <ul className="grid gap-5 sm:grid-cols-2 lg:col-span-8">
+              {WHY.map((w, i) => (
+                <li
+                  key={w.title}
+                  className={
+                    i === 0
+                      ? "rounded-[26px] bg-lime p-7"
+                      : "rounded-[26px] border-2 border-brand/10 bg-white p-7"
+                  }
+                >
+                  <h3 className="font-display text-xl font-bold tracking-tight">{w.title}</h3>
+                  <p className="mt-3 text-[15px] leading-snug text-brand/80">{w.text}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
         {/* FAQ */}
-        <section id="faq" className={`${MAX} scroll-mt-20 py-16 sm:py-20`}>
+        <section id="faq" className={`${MAX} scroll-mt-20 pb-16 sm:pb-20`}>
           <div className="grid gap-10 lg:grid-cols-12">
             <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:col-span-4">
               Частые вопросы
@@ -414,7 +593,11 @@ export function App() {
                 <ContactRow badge="А" title={SITE.address} note={SITE.addressNote} />
                 <ContactRow
                   badge="Т"
-                  title={<a href={SITE.phoneHref}>{SITE.phone}</a>}
+                  title={
+                    <a href={SITE.phoneHref} onClick={onPhoneClick}>
+                      {SITE.phone}
+                    </a>
+                  }
                   note={
                     <>
                       <a
@@ -430,7 +613,12 @@ export function App() {
                 <ContactRow
                   badge="W"
                   title={
-                    <a href={whatsappLink()} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={whatsappLink()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={onWhatsappClick}
+                    >
                       {SITE.whatsappLabel}
                     </a>
                   }
@@ -456,15 +644,16 @@ export function App() {
                   <a
                     className="font-bold text-accent-strong underline"
                     href={whatsappLink(
-                      `Здравствуйте! Хочу консультацию по банкротству. Имя: ${name.trim()}, телефон: ${phone.trim()}`,
+                      `Здравствуйте! Хочу получить бесплатную консультацию. Имя: ${name.trim()}, телефон: ${phone.trim()}, тема: ${topic}`,
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={onWhatsappClick}
                   >
                     нажмите здесь
                   </a>{" "}
                   или позвоните:{" "}
-                  <a href={SITE.phoneHref} className="font-bold">
+                  <a href={SITE.phoneHref} onClick={onPhoneClick} className="font-bold">
                     {SITE.phone}
                   </a>
                   .
@@ -504,7 +693,7 @@ export function App() {
                     Кто вы
                   </legend>
                   <div className="mt-2 grid grid-cols-3 gap-2">
-                    {["Физлицо", "ИП", "Компания"].map((opt) => (
+                    {WHO_OPTIONS.map((opt) => (
                       <label
                         key={opt}
                         className="cursor-pointer rounded-xl border-2 border-brand/15 px-2 py-3 text-center text-sm font-semibold has-checked:border-brand has-checked:bg-brand has-checked:text-lime has-focus-visible:outline-2 has-focus-visible:outline-accent"
@@ -522,6 +711,21 @@ export function App() {
                     ))}
                   </div>
                 </fieldset>
+                <Field id="topic" label="Тема обращения">
+                  <select
+                    id="topic"
+                    name="topic"
+                    value={topic}
+                    onChange={(e) => setTopic(e.target.value)}
+                    className={INPUT}
+                  >
+                    {TOPIC_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
                 <label htmlFor="agree" className="flex cursor-pointer items-start gap-3 py-1">
                   <input
                     id="agree"
@@ -547,7 +751,7 @@ export function App() {
                 </button>
                 <p className="text-center text-xs text-brand/60">
                   Или позвоните:{" "}
-                  <a href={SITE.phoneHref} className="font-bold text-brand">
+                  <a href={SITE.phoneHref} onClick={onPhoneClick} className="font-bold text-brand">
                     {SITE.phone}
                   </a>
                 </p>
@@ -566,7 +770,7 @@ export function App() {
             <Logo inverted />
             <div className="text-sm leading-snug">
               <p className="font-display font-bold">
-                Jana<span className="text-lime">Start</span>
+                JANA <span className="text-lime">START</span>
               </p>
               <p className="text-paper/65">
                 {SITE.legalName} · БИН {SITE.bin}
@@ -574,7 +778,7 @@ export function App() {
             </div>
           </div>
           <div className="text-xs leading-relaxed text-paper/65 md:text-right">
-            <p>© {SITE.foundedYear} JanaStart. Все права защищены.</p>
+            <p>© {SITE.foundedYear} JANA START. Все права защищены.</p>
             <p>Сайт носит информационный характер и не является публичной офертой.</p>
           </div>
         </div>

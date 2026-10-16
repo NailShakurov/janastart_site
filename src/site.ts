@@ -3,6 +3,8 @@
 
 export const SITE = {
   name: "JanaStart",
+  // Отображаемое название бренда (юридическое — legalName)
+  brand: "JANA START",
   tagline: "Банкротство · Казахстан",
   city: "Алматы",
   phone: "+7 700 000-00-00",
@@ -20,5 +22,8 @@ export const SITE = {
   foundedYear: 2026,
 } as const;
 
-export const whatsappLink = (text?: string) =>
-  `https://wa.me/${SITE.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
+// Предзаполненное сообщение для кнопок «Написать в WhatsApp» (T-06)
+export const WHATSAPP_GREETING = "Здравствуйте! Хочу получить бесплатную консультацию.";
+
+export const whatsappLink = (text: string = WHATSAPP_GREETING) =>
+  `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(text)}`;

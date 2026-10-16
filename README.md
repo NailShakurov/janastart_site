@@ -9,7 +9,10 @@
 ## Где что править
 
 - **Контакты, телефон, WhatsApp, адрес, реквизиты** — `src/site.ts`.
-- **Тексты, услуги, этапы, FAQ** — массивы в начале `src/App.tsx`.
+- **Тексты, услуги, этапы, FAQ** — `src/content.ts`; блоки страниц — `src/sections.tsx`; шапка и подвал — `src/ui.tsx`.
+- **Страницы:** главная `index.html` + `src/App.tsx`; реклама банкротства `bankrotstvo/index.html` + `src/pages/Bankrotstvo.tsx`;
+  политика конфиденциальности `politika/index.html` + `src/pages/Politika.tsx`. Новая страница добавляется
+  в `vite.config.ts` (input) и `src/entry-server.tsx` (PAGES).
 - **Цвета и шрифты** — `src/styles.css`; SEO-заголовок и описание — `index.html`.
 - **UTM-метки и события конверсий (Google Ads)** — `src/tracking.ts`; счётчик gtag/GTM подключается в `index.html`.
 

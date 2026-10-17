@@ -1,17 +1,16 @@
 // Главная страница janastart.kz
-import { HOME_NAV, JSON_LD, POLICY_HREF } from "./content";
+import { HOME_NAV, POLICY_HREF } from "./content";
 import { Bankruptcy, Contact, Faq, Hero, Marquee, OtherServices, Process, Why } from "./sections";
-import { Footer, Header, JsonLd, Page } from "./ui";
+import { Footer, Header, Page } from "./ui";
 
 export function App() {
   return (
     <Page>
-      <JsonLd data={JSON_LD} />
       <Header nav={HOME_NAV} />
       <main id="main">
         <Hero />
         <Marquee />
-        <Bankruptcy />
+        <Bankruptcy linkCards />
         <OtherServices />
         <Process />
         <Why />

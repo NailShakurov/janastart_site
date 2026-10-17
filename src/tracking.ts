@@ -1,6 +1,7 @@
 // Реклама и аналитика: сохранение UTM-меток (F-04) и события конверсий (F-03).
-// Счётчик (gtag / Google Tag Manager) на сайте пока не подключён — события
-// уходят в window.dataLayer и в gtag, если они появятся на странице.
+// События уходят в window.dataLayer — его читает Google Tag Manager (подключается
+// через SITE.gtmId). Внутри GTM на них вешаются теги GA4 и Google Ads.
+// Персональные данные (имя, телефон) в события не передаются.
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid"];
 const STORAGE_KEY = "janastart_utm";
@@ -45,19 +46,26 @@ export function getUtm(): Record<string, string> {
   }
 }
 
+/**
+ * События конверсий. Имена и параметры согласованы с ТЗ по SEO/аналитике:
+ * - form_submit: client_type (поле «Кто вы»), lead_topic (поле «Тема»);
+ * - phone_click, whatsapp_click: link_location (header | hero | contacts | form | footer).
+ * Ко всем событиям добавляются page_path и сохранённые UTM.
+ */
 export type ConversionEvent = "form_submit" | "whatsapp_click" | "phone_click";
+
+export type LinkLocation = "header" | "hero" | "contacts" | "form" | "footer";
 
 declare global {
   interface Window {
     dataLayer?: unknown[];
-    gtag?: (...args: unknown[]) => void;
   }
 }
 
-/** Событие конверсии для Google Ads / GTM. Без счётчика на странице ничего не делает. */
+/** Кладёт событие конверсии в dataLayer для Google Tag Manager. Без GTM на странице ничего не делает. */
 export function track(event: ConversionEvent, data: Record<string, string> = {}) {
   if (!isBrowser()) return;
-  const payload = { ...getUtm(), ...data };
-  window.dataLayer?.push({ event, ...payload });
-  window.gtag?.("event", event, payload);
+  const payload = { ...getUtm(), page_path: window.location.pathname, ...data };
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event, ...payload });
 }

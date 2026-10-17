@@ -10,11 +10,22 @@
 
 - **Контакты, телефон, WhatsApp, адрес, реквизиты** — `src/site.ts`.
 - **Тексты, услуги, этапы, FAQ** — `src/content.ts`; блоки страниц — `src/sections.tsx`; шапка и подвал — `src/ui.tsx`.
-- **Страницы:** главная `index.html` + `src/App.tsx`; реклама банкротства `bankrotstvo/index.html` + `src/pages/Bankrotstvo.tsx`;
-  политика конфиденциальности `politika/index.html` + `src/pages/Politika.tsx`. Новая страница добавляется
-  в `vite.config.ts` (input) и `src/entry-server.tsx` (PAGES).
-- **Цвета и шрифты** — `src/styles.css`; SEO-заголовок и описание — `index.html`.
-- **UTM-метки и события конверсий (Google Ads)** — `src/tracking.ts`; счётчик gtag/GTM подключается в `index.html`.
+- **Страницы:** главная `index.html` + `src/App.tsx`; хаб банкротства `bankrotstvo/index.html` + `src/pages/Bankrotstvo.tsx`;
+  политика конфиденциальности `politika/index.html` + `src/pages/Politika.tsx`; страница ошибки `404.html` + `src/pages/NotFound.tsx`.
+  Новая страница добавляется в `vite.config.ts` (input) и в реестр `src/entry-server.tsx` (PAGES): путь, компонент,
+  `lastmod`, блоки JSON-LD.
+- **Цвета и шрифты** — `src/styles.css`; title, description и og:* каждой страницы — в её HTML-файле.
+- **Микроразметка JSON-LD** (LegalService, FAQPage, BreadcrumbList) — `src/seo.ts`; FAQPage собирается из тех же
+  данных `FAQ`, что и видимый блок, поэтому текст всегда совпадает.
+- **Sitemap** генерируется при сборке из реестра страниц: только индексируемые, `lastmod` — дата изменения текста
+  (поле `lastmod` в `src/entry-server.tsx`, обновлять вручную при правке контента). `public/robots.txt` — статичный.
+- **Google Tag Manager и Search Console** — `src/site.ts`: `gtmId` (контейнер GTM-XXXXXXX) и `googleSiteVerification`.
+  Пока значения пустые, ничего не вставляется. GA4, Google Ads и Яндекс.Метрика настраиваются внутри GTM, прямой
+  gtag.js на сайт не добавлять.
+- **UTM-метки и события конверсий** — `src/tracking.ts`. В `dataLayer` уходят `form_submit` (client_type, lead_topic),
+  `phone_click` и `whatsapp_click` (link_location: header / hero / contacts / form), ко всем добавляется `page_path`
+  и сохранённые UTM. В GTM для них нужны триггеры «Пользовательское событие» с этими именами; триггеры по клику на
+  tel:/wa.me не добавлять, иначе клики посчитаются дважды. Имя и телефон в события не передаются.
 
 Заявки с формы открывают WhatsApp с заполненным сообщением на номер из `src/site.ts`
 (GitHub Pages не умеет принимать формы на сервере).

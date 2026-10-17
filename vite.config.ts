@@ -15,6 +15,7 @@ export default defineConfig({
         main: page("index.html"),
         bankrotstvo: page("bankrotstvo/index.html"),
         politika: page("politika/index.html"),
+        notfound: page("404.html"),
       },
     },
   },

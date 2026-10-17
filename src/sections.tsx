@@ -13,12 +13,14 @@ import {
   WHO_OPTIONS,
   WHY,
 } from "./content";
+import type { Crumb } from "./seo";
 import { SITE, whatsappLink } from "./site";
 import { getUtm, track } from "./tracking";
 import {
   BTN_DARK,
   BTN_GHOST,
   BTN_MAIN,
+  Breadcrumbs,
   CARD,
   ContactRow,
   Field,
@@ -32,12 +34,23 @@ import {
   onWhatsappClick,
 } from "./ui";
 
+const HERO_DISPLAY = "max-w-[14ch] font-serif text-[clamp(38px,7vw,72px)] font-bold leading-[1.15]";
+
+/**
+ * Первый экран. Если передан tagline, крупной строкой показывается он (слоган),
+ * а title становится небольшим H1 над ним — так на главной: H1 с ключевой фразой,
+ * слоган «Новый старт без долгов» в прежнем стиле.
+ */
 export function Hero({
-  title = "Новый старт без долгов",
+  title = "Банкротство и юридическая помощь в Алматы",
+  tagline = "Новый старт без долгов",
   lead = "Jana по-казахски значит «новый». Мы помогаем гражданам, ИП и компаниям выйти из долгов по закону и решаем другие юридические вопросы. Юристы с 20-летним стажем.",
+  crumbs,
 }: {
   title?: string;
+  tagline?: string | null;
   lead?: string;
+  crumbs?: Crumb[];
 }) {
   return (
     <section id="top" className="relative overflow-hidden bg-ink pb-[150px] pt-[84px] text-white">
@@ -50,7 +63,17 @@ export function Hero({
         }}
       />
       <div className={`${WRAP} relative z-10`}>
-        <h1 className="max-w-[14ch] text-[clamp(38px,7vw,72px)] font-bold">{title}</h1>
+        {crumbs && <Breadcrumbs crumbs={crumbs} className="mb-6" />}
+        {tagline ? (
+          <>
+            <h1 className="font-sans text-[clamp(15px,1.8vw,18px)] font-bold uppercase leading-normal tracking-[0.14em] text-dawn">
+              {title}
+            </h1>
+            <p className={`hero-tagline mt-3 ${HERO_DISPLAY}`}>{tagline}</p>
+          </>
+        ) : (
+          <h1 className={HERO_DISPLAY}>{title}</h1>
+        )}
         <p className="mt-5 max-w-[54ch] text-[19px] text-mist-light">{lead}</p>
         <div className="mt-7 flex flex-wrap gap-3">
           <a href="#contact" className={BTN_MAIN}>
@@ -60,7 +83,7 @@ export function Hero({
             href={whatsappLink()}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={onWhatsappClick}
+            onClick={onWhatsappClick("hero")}
             className={BTN_GHOST}
           >
             Написать в WhatsApp
@@ -99,7 +122,19 @@ export function Marquee() {
   );
 }
 
-export function Bankruptcy() {
+/**
+ * Блок процедур и направлений. linkCards — заголовки карточек становятся ссылками
+ * на страницы услуг (на главной); на самой странице /bankrotstvo/ ссылки не нужны.
+ */
+export function Bankruptcy({ linkCards = false }: { linkCards?: boolean }) {
+  const cardTitle = (card: { title: string; href: string }) =>
+    linkCards ? (
+      <a href={card.href} className="hover:underline">
+        {card.title}
+      </a>
+    ) : (
+      card.title
+    );
   return (
     <section id="bankruptcy" className={SECTION}>
       {/* Старый якорь #procedures — псевдоним на этот блок (F-05) */}
@@ -122,7 +157,7 @@ export function Bankruptcy() {
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {PROCEDURES.map((p) => (
             <article key={p.title} className={`${CARD} border-t-[5px] border-t-dawn`}>
-              <h3 className={H3}>{p.title}</h3>
+              <h3 className={H3}>{cardTitle(p)}</h3>
               <p className="mt-2 text-ink2">{p.text}</p>
             </article>
           ))}
@@ -134,7 +169,7 @@ export function Bankruptcy() {
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {SERVICES.map((s) => (
             <article key={s.title} className={`${CARD} flex flex-col`}>
-              <h3 className={H3}>{s.title}</h3>
+              <h3 className={H3}>{cardTitle(s)}</h3>
               <p className="mt-2 flex-1 text-ink2">{s.text}</p>
               <a
                 href="#contact"
@@ -227,7 +262,7 @@ export function Faq() {
           {FAQ.map((item) => (
             <details key={item.q} className="group rounded-lg border border-line bg-white">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-[22px] py-[18px] font-bold [&::-webkit-details-marker]:hidden">
-                {item.q}
+                <h3 className="font-sans text-[17px] leading-[1.6]">{item.q}</h3>
                 <span aria-hidden="true" className="shrink-0 text-2xl leading-none text-green">
                   <span className="group-open:hidden">+</span>
                   <span className="hidden group-open:inline">−</span>
@@ -273,7 +308,9 @@ export function Contact() {
     ]
       .filter(Boolean)
       .join("\n");
-    track("form_submit", { who, topic });
+    // Событие уходит в dataLayer до открытия WhatsApp. Задержка не нужна: wa.me
+    // открывается в новой вкладке, страница с формой остаётся и тег успевает отправиться.
+    track("form_submit", { client_type: who, lead_topic: topic });
     window.open(whatsappLink(text), "_blank", "noopener");
     setSubmitted(true);
   };
@@ -298,7 +335,11 @@ export function Contact() {
               )}
             </ContactRow>
             <ContactRow label="Телефон">
-              <a href={SITE.phoneHref} onClick={onPhoneClick} className="hover:underline">
+              <a
+                href={SITE.phoneHref}
+                onClick={onPhoneClick("contacts")}
+                className="hover:underline"
+              >
                 {SITE.phone}
               </a>
             </ContactRow>
@@ -307,7 +348,7 @@ export function Contact() {
                 href={whatsappLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={onWhatsappClick}
+                onClick={onWhatsappClick("contacts")}
                 className="hover:underline"
               >
                 {SITE.whatsappLabel}
@@ -342,12 +383,16 @@ export function Contact() {
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={onWhatsappClick}
+                onClick={onWhatsappClick("form")}
               >
                 нажмите здесь
               </a>{" "}
               или позвоните:{" "}
-              <a href={SITE.phoneHref} onClick={onPhoneClick} className="font-bold text-ink">
+              <a
+                href={SITE.phoneHref}
+                onClick={onPhoneClick("form")}
+                className="font-bold text-ink"
+              >
                 {SITE.phone}
               </a>
               .
@@ -449,7 +494,11 @@ export function Contact() {
             </button>
             <p className="text-center text-[15px] text-ink2">
               Или позвоните:{" "}
-              <a href={SITE.phoneHref} onClick={onPhoneClick} className="font-bold text-ink">
+              <a
+                href={SITE.phoneHref}
+                onClick={onPhoneClick("form")}
+                className="font-bold text-ink"
+              >
                 {SITE.phone}
               </a>
             </p>

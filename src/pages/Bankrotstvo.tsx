@@ -1,7 +1,8 @@
 // Посадочная страница под рекламу банкротства: /bankrotstvo/ (F-07).
-// Те же тексты, что на главной, без блока «Другие услуги».
+// Хаб раздела: те же процедуры, что на главной, без блока «Другие услуги».
 import { POLICY_HREF, type NavItem } from "../content";
 import { Bankruptcy, Contact, Faq, Hero, Process } from "../sections";
+import { BANKRUPTCY_CRUMBS } from "../seo";
 import { Footer, Header, Page } from "../ui";
 
 const NAV: NavItem[] = [
@@ -18,7 +19,9 @@ export function Bankrotstvo() {
       <main id="main">
         <Hero
           title="Банкротство в Казахстане: новый старт без долгов"
+          tagline={null}
           lead="Помогаем гражданам, ИП и компаниям законно выйти из долгов: внесудебное и судебное банкротство, восстановление платёжеспособности. Юристы с 20-летним стажем, первая консультация бесплатно."
+          crumbs={BANKRUPTCY_CRUMBS}
         />
         <Bankruptcy />
         <Process />

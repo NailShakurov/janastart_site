@@ -2,10 +2,11 @@
 // ПРОЕКТ. Текст подготовлен для вычитки юристом владельца сайта перед публикацией.
 import { type ReactNode } from "react";
 import { POLICY_HREF, SUBPAGE_NAV } from "../content";
+import { POLICY_CRUMBS } from "../seo";
 import { SITE } from "../site";
-import { Footer, H2, Header, Page, WRAP } from "../ui";
+import { Breadcrumbs, Footer, H2, Header, Page, WRAP } from "../ui";
 
-const UPDATED = "16 октября 2026 года";
+const UPDATED = "17 октября 2026 года";
 
 function Section({ n, title, children }: { n: number; title: string; children: ReactNode }) {
   return (
@@ -36,7 +37,7 @@ export function Politika() {
       <main id="main">
         <section className="bg-ink pb-12 pt-14 text-white">
           <div className={WRAP}>
-            <p className="text-[15px] text-mist">janastart.kz</p>
+            <Breadcrumbs crumbs={POLICY_CRUMBS} />
             <h1 className="mt-2 max-w-[20ch] text-[clamp(30px,5vw,48px)] font-bold">
               Политика конфиденциальности
             </h1>
@@ -146,9 +147,14 @@ export function Politika() {
                   журналах.
                 </>,
                 <>
-                  <b>Сервисы Google</b> (Google LLC): рекламные и аналитические сервисы, если они
-                  подключены на Сайте. Они используют файлы cookie и собирают обезличенные данные о
-                  посещении.
+                  <b>Сервисы Google</b> (Google LLC): Google Tag Manager, Google Analytics и Google
+                  Ads — для подсчёта посещений и оценки рекламных кампаний. Они используют файлы
+                  cookie и собирают обезличенные данные о посещении: страницы, устройство, источник
+                  перехода, факт отправки формы (без имени и телефона).
+                </>,
+                <>
+                  <b>Яндекс.Метрика</b> (ООО «Яндекс»): сервис веб-аналитики, если он подключён на
+                  Сайте; собирает обезличенные данные о посещении с помощью cookie.
                 </>,
               ]}
             />
@@ -213,10 +219,11 @@ export function Politika() {
           <Section n={9} title="Файлы cookie и хранилище браузера">
             <p>
               Сайт сам по себе не устанавливает файлы cookie. Он сохраняет в локальном хранилище
-              браузера только метки рекламных кампаний (см. раздел 2) на 30 дней. Если на Сайте
-              подключены сервисы Google для рекламы и аналитики, они используют собственные cookie в
-              соответствии со своей политикой. Вы можете отключить cookie в настройках браузера; на
-              работу формы это не повлияет.
+              браузера только метки рекламных кампаний (см. раздел 2) на 30 дней. Сервисы аналитики
+              и рекламы (Google Analytics, Google Ads, Яндекс.Метрика), если они подключены на
+              Сайте, используют собственные cookie в соответствии со своей политикой, чтобы считать
+              посещения и оценивать эффективность рекламы. Вы можете отключить cookie в настройках
+              браузера или воспользоваться блокировщиком рекламы; на работу формы это не повлияет.
             </p>
           </Section>
 

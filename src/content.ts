@@ -1,18 +1,22 @@
-// Тексты сайта. Правки формулировок — здесь.
-import { SITE } from "./site";
+// Тексты сайта. Правки формулировок — здесь. Микроразметка JSON-LD — в seo.ts.
 
 export type NavItem = { label: string; href: string };
 
+/** Адрес страницы-хаба «Банкротство». */
+export const BANKRUPTCY_HREF = "/bankrotstvo/";
+
 export const HOME_NAV: NavItem[] = [
-  { label: "Банкротство", href: "#bankruptcy" },
+  { label: "Банкротство", href: BANKRUPTCY_HREF },
   { label: "Услуги", href: "#services" },
   { label: "Как работаем", href: "#process" },
   { label: "Вопросы", href: "#faq" },
   { label: "Контакты", href: "#contact" },
 ];
 
-/** Навигация для внутренних страниц: ведёт на блоки главной. */
-export const SUBPAGE_NAV: NavItem[] = HOME_NAV.map((i) => ({ ...i, href: `/${i.href}` }));
+/** Навигация для внутренних страниц: якоря ведут на блоки главной. */
+export const SUBPAGE_NAV: NavItem[] = HOME_NAV.map((i) =>
+  i.href.startsWith("#") ? { ...i, href: `/${i.href}` } : i,
+);
 
 export const MARQUEE = [
   "Банкротство граждан, ИП и компаний",
@@ -29,32 +33,44 @@ export const FACTS = [
   { value: "В договоре", label: "фиксированная стоимость услуг" },
 ];
 
-export const PROCEDURES = [
+/**
+ * Карточки процедур и направлений. href — страница услуги. Пока страницы Этапа 2 не опубликованы,
+ * все ссылки ведут на хаб /bankrotstvo/; при запуске заменить на /bankrotstvo/<slug>/.
+ */
+export type ServiceCard = { title: string; text: string; href: string };
+
+export const PROCEDURES: ServiceCard[] = [
   {
     title: "Внесудебное банкротство",
+    href: BANKRUPTCY_HREF, // Этап 2: /bankrotstvo/vnesudebnoe/
     text: "Упрощённая процедура для небольших долгов при отсутствии имущества.",
   },
   {
     title: "Восстановление платёжеспособности",
+    href: BANKRUPTCY_HREF, // Этап 2: /bankrotstvo/vosstanovlenie-platezhesposobnosti/
     text: "Через суд: план погашения долгов, если у вас есть доход.",
   },
   {
     title: "Судебное банкротство",
+    href: BANKRUPTCY_HREF, // Этап 2: /bankrotstvo/sudebnoe/
     text: "Через суд: списание долгов, когда погасить их нет возможности.",
   },
 ];
 
-export const SERVICES = [
+export const SERVICES: ServiceCard[] = [
   {
     title: "Физические лица",
+    href: BANKRUPTCY_HREF, // Этап 2: /bankrotstvo/fizicheskih-lic/
     text: "Кредиты, микрозаймы, задолженность по налогам и штрафам. Разберём, что будет с жильём и доходом, до начала работы.",
   },
   {
     title: "ИП и компании",
+    href: BANKRUPTCY_HREF, // Этап 2: /bankrotstvo/ip-i-kompaniy/
     text: "Реабилитация или банкротство бизнеса. Оцениваем риски для учредителей и выстраиваем работу с кредиторами.",
   },
   {
     title: "Защита от коллекторов",
+    href: BANKRUPTCY_HREF, // Этап 2: /bankrotstvo/zashchita-ot-kollektorov/
     text: "Проверяем законность начислений, отвечаем на давление коллекторов и ведём переговоры с банками о реструктуризации.",
   },
 ];
@@ -162,21 +178,3 @@ export const TOPIC_OPTIONS = [
 
 /** Адрес страницы политики конфиденциальности. */
 export const POLICY_HREF = "/politika/";
-
-// Микроразметка LegalService (F-06). Значения берутся из site.ts.
-export const JSON_LD = {
-  "@context": "https://schema.org",
-  "@type": "LegalService",
-  name: SITE.brand,
-  url: "https://janastart.kz/",
-  telephone: SITE.phoneHref.replace("tel:", ""),
-  email: SITE.email,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: SITE.address,
-    addressLocality: SITE.city,
-    addressCountry: "KZ",
-  },
-  areaServed: SITE.city,
-  openingHours: "Mo-Fr 09:00-19:00",
-};

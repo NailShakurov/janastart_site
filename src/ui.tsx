@@ -1,8 +1,9 @@
 // Общие классы и элементы оформления: шапка, подвал, поля формы.
 import { useState, type ReactNode } from "react";
 import type { NavItem } from "./content";
+import type { Crumb } from "./seo";
 import { SITE } from "./site";
-import { track } from "./tracking";
+import { track, type LinkLocation } from "./tracking";
 
 export const WRAP = "mx-auto max-w-[1080px] px-5";
 export const SECTION = "py-[72px]";
@@ -17,8 +18,11 @@ export const BTN_DARK = `${BTN} bg-ink text-white hover:bg-ink2`;
 export const INPUT =
   "mt-1.5 block w-full rounded-md border border-[#b9c1d3] bg-white p-[13px] text-base focus:border-ink focus:outline-none";
 
-export const onWhatsappClick = () => track("whatsapp_click");
-export const onPhoneClick = () => track("phone_click");
+/** Обработчики кликов по wa.me и tel: — событие в dataLayer с местом ссылки на странице. */
+export const onWhatsappClick = (link_location: LinkLocation) => () =>
+  track("whatsapp_click", { link_location });
+export const onPhoneClick = (link_location: LinkLocation) => () =>
+  track("phone_click", { link_location });
 
 export function Page({ children }: { children: ReactNode }) {
   return (
@@ -34,12 +38,46 @@ export function Page({ children }: { children: ReactNode }) {
   );
 }
 
-export function JsonLd({ data }: { data: object }) {
-  return <script type="application/ld+json">{JSON.stringify(data)}</script>;
+/** Логотип: файл public/logo-mark.png 96×127, в шапке и подвале масштабируется по высоте. */
+function LogoMark({ className }: { className: string }) {
+  return (
+    <img
+      src="/logo-mark.png"
+      alt="JANA START — юридическая компания, Алматы"
+      width="96"
+      height="127"
+      className={className}
+    />
+  );
 }
 
-function LogoMark({ className }: { className: string }) {
-  return <img src="/logo-mark.png" alt="" width="34" height="45" className={className} />;
+/** Видимые хлебные крошки для внутренних страниц (дублируют BreadcrumbList в JSON-LD). */
+export function Breadcrumbs({ crumbs, className = "" }: { crumbs: Crumb[]; className?: string }) {
+  return (
+    <nav aria-label="Хлебные крошки" className={`text-[15px] text-mist ${className}`}>
+      <ol className="flex flex-wrap items-center gap-x-2">
+        {crumbs.map((c, i) => {
+          const last = i === crumbs.length - 1;
+          return (
+            <li key={c.path} className="flex items-center gap-x-2">
+              {i > 0 && (
+                <span aria-hidden="true" className="text-dawn">
+                  /
+                </span>
+              )}
+              {last ? (
+                <span aria-current="page">{c.name}</span>
+              ) : (
+                <a href={c.path} className="hover:text-white hover:underline">
+                  {c.name}
+                </a>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
 }
 
 export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: string }) {
@@ -74,7 +112,7 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
         <div className="flex items-center gap-4">
           <a
             href={SITE.phoneHref}
-            onClick={onPhoneClick}
+            onClick={onPhoneClick("header")}
             className="hidden whitespace-nowrap font-bold md:block"
           >
             {SITE.phone}
@@ -130,7 +168,11 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
                 {item.label}
               </a>
             ))}
-            <a href={SITE.phoneHref} onClick={onPhoneClick} className="py-4 font-bold text-dawn">
+            <a
+              href={SITE.phoneHref}
+              onClick={onPhoneClick("header")}
+              className="py-4 font-bold text-dawn"
+            >
               {SITE.phone}
             </a>
           </div>

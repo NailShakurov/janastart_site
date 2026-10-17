@@ -48,7 +48,7 @@ export function getUtm(): Record<string, string> {
 
 /**
  * События конверсий. Имена и параметры согласованы с ТЗ по SEO/аналитике:
- * - form_submit: client_type (поле «Кто вы»), lead_topic (поле «Тема»);
+ * - form_submit: client_type (поле «Кто вы»), lead_topic (поле «Тема»), lead_city (поле «Город»);
  * - phone_click, whatsapp_click: link_location (header | hero | contacts | form | footer).
  * Ко всем событиям добавляются page_path и сохранённые UTM.
  */

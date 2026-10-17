@@ -5,13 +5,17 @@ import { renderToString } from "react-dom/server";
 import { App } from "./App";
 import { NotFound } from "./pages/NotFound";
 import { Bankrotstvo } from "./pages/Bankrotstvo";
+import { Onlain } from "./pages/Onlain";
 import { Politika } from "./pages/Politika";
+import { ONLAIN, ONLAIN_FAQ } from "./content-onlain";
 import {
   BANKRUPTCY_CRUMBS,
+  ONLAIN_CRUMBS,
   POLICY_CRUMBS,
   breadcrumbJsonLd,
   faqJsonLd,
   legalServiceJsonLd,
+  serviceJsonLd,
 } from "./seo";
 import { SITE } from "./site";
 
@@ -46,6 +50,23 @@ export const PAGES: PageDef[] = [
     Component: Bankrotstvo,
     lastmod: "2026-10-17",
     jsonLd: [legalServiceJsonLd(), breadcrumbJsonLd(BANKRUPTCY_CRUMBS), faqJsonLd()],
+  },
+  {
+    file: "onlain/index.html",
+    path: "/onlain/",
+    Component: Onlain,
+    lastmod: "2026-10-17",
+    jsonLd: [
+      legalServiceJsonLd(),
+      breadcrumbJsonLd(ONLAIN_CRUMBS),
+      serviceJsonLd({
+        name: "Юрист онлайн по всему Казахстану",
+        description: ONLAIN.lead,
+        url: "/onlain/",
+        area: { "@type": "Country", name: "Казахстан" },
+      }),
+      faqJsonLd(ONLAIN_FAQ),
+    ],
   },
   {
     file: "politika/index.html",

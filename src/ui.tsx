@@ -1,6 +1,6 @@
 // Общие классы и элементы оформления: шапка, подвал, поля формы.
 import { useState, type ReactNode } from "react";
-import type { NavItem } from "./content";
+import { ONLAIN_HREF, type NavItem } from "./content";
 import type { Crumb } from "./seo";
 import { SITE } from "./site";
 import { track, type LinkLocation } from "./tracking";
@@ -97,13 +97,13 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
         </a>
         <nav
           aria-label="Основная навигация"
-          className="hidden items-center gap-[22px] text-[15px] lg:flex"
+          className="hidden items-center gap-[18px] text-[14px] lg:flex"
         >
           {nav.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="opacity-85 hover:underline hover:opacity-100"
+              className="whitespace-nowrap opacity-85 hover:underline hover:opacity-100"
             >
               {item.label}
             </a>
@@ -113,7 +113,7 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
           <a
             href={SITE.phoneHref}
             onClick={onPhoneClick("header")}
-            className="hidden whitespace-nowrap font-bold md:block"
+            className="hidden whitespace-nowrap font-bold md:block lg:hidden xl:block"
           >
             {SITE.phone}
           </a>
@@ -203,6 +203,13 @@ export function Footer({
         </a>
         <p>
           {SITE.legalName}, БИН {SITE.bin}
+        </p>
+        <p className="mt-1.5">
+          {SITE.address}.{" "}
+          <a href={ONLAIN_HREF} className="underline underline-offset-2 hover:text-white">
+            {SITE.onlineNote}
+          </a>
+          .
         </p>
         <p className="mt-1.5">© {SITE.foundedYear} JANA START. Все права защищены.</p>
         <p className="mt-1.5">

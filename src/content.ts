@@ -4,10 +4,13 @@ export type NavItem = { label: string; href: string };
 
 /** Адрес страницы-хаба «Банкротство». */
 export const BANKRUPTCY_HREF = "/bankrotstvo/";
+/** Адрес страницы «Юрист онлайн по всему Казахстану». */
+export const ONLAIN_HREF = "/onlain/";
 
 export const HOME_NAV: NavItem[] = [
   { label: "Банкротство", href: BANKRUPTCY_HREF },
   { label: "Услуги", href: "#services" },
+  { label: "Онлайн", href: ONLAIN_HREF },
   { label: "Как работаем", href: "#process" },
   { label: "Вопросы", href: "#faq" },
   { label: "Контакты", href: "#contact" },
@@ -102,6 +105,10 @@ export const OTHER_SERVICES = [
   },
 ];
 
+/** Фраза под заголовком «Как мы работаем»: все этапы проходят удалённо. */
+export const PROCESS_LEAD =
+  "Все этапы можно пройти удалённо: консультация, документы, договор и оплата — онлайн из любого города Казахстана.";
+
 export const STEPS = [
   {
     title: "Анализ ситуации",
@@ -168,6 +175,18 @@ export const FAQ = [
 ];
 
 export const WHO_OPTIONS = ["Физлицо", "ИП", "Компания"] as const;
+
+/** Строка под слоганом на главной (раздел ТЗ «География»), ссылка ведёт на /onlain/. */
+export const GEO_LINE = { office: "Офис в Алматы", online: "работаем онлайн по всему Казахстану" };
+
+/** Поле «Город» в форме: уходит в WhatsApp-сообщение и в событие form_submit как lead_city. */
+export const CITY_OPTIONS = [
+  "Алматы",
+  "Алматинская обл.",
+  "Астана",
+  "Шымкент",
+  "Другой город",
+] as const;
 
 export const TOPIC_OPTIONS = [
   "Банкротство физлица",

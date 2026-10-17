@@ -62,11 +62,37 @@ export const breadcrumbJsonLd = (crumbs: Crumb[]) => ({
   })),
 });
 
+/**
+ * Service — для страниц географии: услуга с зоной обслуживания и ссылкой на организацию.
+ * area: { "@type": "Country" | "City" | "State", name } — для /onlain/ вся страна, для городских страниц город.
+ */
+export const serviceJsonLd = (opts: {
+  name: string;
+  description: string;
+  url: string;
+  area: { "@type": string; name: string };
+}) => ({
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: opts.name,
+  description: opts.description,
+  url: `${SITE.origin}${opts.url}`,
+  serviceType: "Юридические услуги",
+  provider: { "@id": ORG_ID },
+  areaServed: opts.area,
+  availableChannel: {
+    "@type": "ServiceChannel",
+    serviceUrl: `${SITE.origin}${opts.url}`,
+    servicePhone: SITE.phoneHref.replace("tel:", ""),
+  },
+});
+
 export const HOME_CRUMB: Crumb = { name: "Главная", path: "/" };
 export const BANKRUPTCY_CRUMBS: Crumb[] = [
   HOME_CRUMB,
   { name: "Банкротство", path: "/bankrotstvo/" },
 ];
+export const ONLAIN_CRUMBS: Crumb[] = [HOME_CRUMB, { name: "Юрист онлайн", path: "/onlain/" }];
 export const POLICY_CRUMBS: Crumb[] = [
   HOME_CRUMB,
   { name: "Политика конфиденциальности", path: "/politika/" },

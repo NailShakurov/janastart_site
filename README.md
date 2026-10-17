@@ -11,6 +11,7 @@
 - **Контакты, телефон, WhatsApp, адрес, реквизиты** — `src/site.ts`.
 - **Тексты, услуги, этапы, FAQ** — `src/content.ts`; блоки страниц — `src/sections.tsx`; шапка и подвал — `src/ui.tsx`.
 - **Страницы:** главная `index.html` + `src/App.tsx`; хаб банкротства `bankrotstvo/index.html` + `src/pages/Bankrotstvo.tsx`;
+  юрист онлайн по Казахстану `onlain/index.html` + `src/pages/Onlain.tsx` (тексты в `src/content-onlain.ts`, согласованы с юристом);
   политика конфиденциальности `politika/index.html` + `src/pages/Politika.tsx`; страница ошибки `404.html` + `src/pages/NotFound.tsx`.
   Новая страница добавляется в `vite.config.ts` (input) и в реестр `src/entry-server.tsx` (PAGES): путь, компонент,
   `lastmod`, блоки JSON-LD.
@@ -22,7 +23,7 @@
 - **Google Tag Manager и Search Console** — `src/site.ts`: `gtmId` (контейнер GTM-XXXXXXX) и `googleSiteVerification`.
   Пока значения пустые, ничего не вставляется. GA4, Google Ads и Яндекс.Метрика настраиваются внутри GTM, прямой
   gtag.js на сайт не добавлять.
-- **UTM-метки и события конверсий** — `src/tracking.ts`. В `dataLayer` уходят `form_submit` (client_type, lead_topic),
+- **UTM-метки и события конверсий** — `src/tracking.ts`. В `dataLayer` уходят `form_submit` (client_type, lead_topic, lead_city),
   `phone_click` и `whatsapp_click` (link_location: header / hero / contacts / form), ко всем добавляется `page_path`
   и сохранённые UTM. В GTM для них нужны триггеры «Пользовательское событие» с этими именами; триггеры по клику на
   tel:/wa.me не добавлять, иначе клики посчитаются дважды. Имя и телефон в события не передаются.

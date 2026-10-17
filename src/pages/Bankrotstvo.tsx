@@ -1,6 +1,6 @@
 // Посадочная страница под рекламу банкротства: /bankrotstvo/ (F-07).
 // Хаб раздела: те же процедуры, что на главной, без блока «Другие услуги».
-import { POLICY_HREF, type NavItem } from "../content";
+import { ONLAIN_HREF, POLICY_HREF, type NavItem } from "../content";
 import { Bankruptcy, Contact, Faq, Hero, Process } from "../sections";
 import { BANKRUPTCY_CRUMBS } from "../seo";
 import { Footer, Header, Page } from "../ui";
@@ -8,6 +8,7 @@ import { Footer, Header, Page } from "../ui";
 const NAV: NavItem[] = [
   { label: "Банкротство", href: "#bankruptcy" },
   { label: "Как работаем", href: "#process" },
+  { label: "Онлайн", href: ONLAIN_HREF },
   { label: "Вопросы", href: "#faq" },
   { label: "Контакты", href: "#contact" },
 ];

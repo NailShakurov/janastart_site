@@ -14,6 +14,7 @@ export default defineConfig({
       input: {
         main: page("index.html"),
         bankrotstvo: page("bankrotstvo/index.html"),
+        onlain: page("onlain/index.html"),
         politika: page("politika/index.html"),
         notfound: page("404.html"),
       },

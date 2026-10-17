@@ -1,5 +1,5 @@
 // Страница /onlain/: юрист онлайн по всему Казахстану (раздел ТЗ «География»).
-import { CITY_OPTIONS, POLICY_HREF, SUBPAGE_NAV } from "../content";
+import { POLICY_HREF, SUBPAGE_NAV } from "../content";
 import { ONLAIN, ONLAIN_COURT, ONLAIN_FAQ, ONLAIN_STEPS, ONLAIN_WHY } from "../content-onlain";
 import { Contact, Faq, Hero, Process, Why } from "../sections";
 import { ONLAIN_CRUMBS } from "../seo";
@@ -34,7 +34,7 @@ export function Onlain() {
         </section>
         <Why title="Почему это удобно" lead={null} items={ONLAIN_WHY} />
         <Faq items={ONLAIN_FAQ} />
-        <Contact intro={ONLAIN.cta} defaultCity={CITY_OPTIONS[4]} />
+        <Contact intro={ONLAIN.cta} />
       </main>
       <Footer homeHref="/" policyHref={POLICY_HREF} />
     </Page>

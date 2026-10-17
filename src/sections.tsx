@@ -327,17 +327,15 @@ export function Faq({ items = FAQ }: { items?: readonly { q: string; a: string }
 
 export function Contact({
   intro,
-  defaultCity = CITY_OPTIONS[0],
 }: {
   /** Призыв к действию под заголовком формы. */
   intro?: string;
-  /** Предвыбранный город в поле «Город». */
-  defaultCity?: (typeof CITY_OPTIONS)[number];
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [who, setWho] = useState<string>(WHO_OPTIONS[0]);
-  const [city, setCity] = useState<string>(defaultCity);
+  // Город без значения по умолчанию и обязателен: в lead_city должны попадать реальные города.
+  const [city, setCity] = useState("");
   const [topic, setTopic] = useState<string>(TOPIC_OPTIONS[0]);
   const [agree, setAgree] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -346,8 +344,8 @@ export function Contact({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const digits = phone.replace(/\D/g, "");
-    if (!name.trim() || digits.length < 10 || digits.length > 11 || !agree) {
-      setError("Заполните имя и телефон и подтвердите согласие.");
+    if (!name.trim() || digits.length < 10 || digits.length > 11 || !city || !agree) {
+      setError("Заполните имя, телефон и город и подтвердите согласие.");
       return;
     }
     setError(null);
@@ -511,11 +509,15 @@ export function Contact({
               <select
                 id="city"
                 name="city"
+                required
                 autoComplete="address-level2"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className={INPUT}
+                className={`${INPUT} ${city ? "" : "text-[#6b7280]"}`}
               >
+                <option value="" disabled>
+                  Выберите город
+                </option>
                 {CITY_OPTIONS.map((opt) => (
                   <option key={opt} value={opt}>
                     {opt}

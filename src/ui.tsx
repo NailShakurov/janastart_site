@@ -117,6 +117,18 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
           >
             {SITE.phone}
           </a>
+          {/* На 1024–1279px номер не помещается рядом с меню — остаётся иконка со ссылкой tel: */}
+          <a
+            href={SITE.phoneHref}
+            onClick={onPhoneClick("header")}
+            aria-label={`Позвонить: ${SITE.phone}`}
+            title={SITE.phone}
+            className="hidden size-11 place-items-center rounded-md border border-white/40 hover:bg-white/10 lg:grid xl:hidden"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+              <path d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z" />
+            </svg>
+          </a>
           <a
             href="#contact"
             className="hidden rounded-md bg-dawn px-5 py-2.5 text-[15px] font-bold text-ink transition-colors hover:bg-dawn-hover sm:inline-block"

@@ -338,6 +338,8 @@ export function Contact({
   const [city, setCity] = useState("");
   const [topic, setTopic] = useState<string>(TOPIC_OPTIONS[0]);
   const [agree, setAgree] = useState(false);
+  // Ловушка для ботов: поле скрыто от людей, заполненное значение отбрасывает приёмник.
+  const [website, setWebsite] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
@@ -364,6 +366,28 @@ export function Contact({
     ]
       .filter(Boolean)
       .join("\n");
+    // Копия заявки в Telegram и на почту — на случай, если клиент не нажмёт «Отправить»
+    // в WhatsApp. keepalive — запрос доживает до открытия новой вкладки; text/plain и
+    // no-cors — без preflight, ответ нам не нужен. Ошибку глотаем: WhatsApp остаётся
+    // основным каналом.
+    if (SITE.leadEndpoint) {
+      fetch(SITE.leadEndpoint, {
+        method: "POST",
+        mode: "no-cors",
+        keepalive: true,
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: phone.trim(),
+          who,
+          city,
+          topic,
+          page: window.location.pathname,
+          source,
+          website,
+        }),
+      }).catch(() => {});
+    }
     // Событие уходит в dataLayer до открытия WhatsApp. Задержка не нужна: wa.me
     // открывается в новой вкладке, страница с формой остаётся и тег успевает отправиться.
     track("form_submit", { client_type: who, lead_topic: topic, lead_city: city });
@@ -463,6 +487,16 @@ export function Contact({
               noValidate
               className="space-y-3.5 rounded-[10px] border border-line bg-paper p-[26px]"
             >
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                className="absolute -left-[9999px] size-px opacity-0"
+              />
               <Field id="name" label="Ваше имя">
                 <input
                   id="name"

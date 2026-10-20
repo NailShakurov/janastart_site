@@ -33,6 +33,11 @@ export const SITE = {
    * настраиваются внутри контейнера, прямой gtag.js на сайт не добавлять.
    */
   gtmId: "GTM-MVHPCXM3",
+  /**
+   * Приёмник заявок с формы (Cloudflare Worker из worker/lead.js): пересылает их в Telegram
+   * и на почту. Пустая строка — заявка уходит только в WhatsApp, как раньше.
+   */
+  leadEndpoint: "https://janastart-lead.nshakurov.workers.dev",
   /** Код подтверждения Google Search Console (meta google-site-verification), если нет доступа к DNS. */
   googleSiteVerification: "",
 } as const;

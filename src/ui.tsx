@@ -40,11 +40,14 @@ export function Page({ children }: { children: ReactNode }) {
   );
 }
 
-/** Логотип: файл public/logo-mark.png 96×127, в шапке и подвале масштабируется по высоте. */
+/**
+ * Логотип: public/logo-mark.webp 96×127 (6,5 КиБ вместо 17 КиБ у PNG), в шапке и подвале
+ * масштабируется по высоте. PNG остаётся для JSON-LD (src/seo.ts).
+ */
 function LogoMark({ className }: { className: string }) {
   return (
     <img
-      src="/logo-mark.png"
+      src="/logo-mark.webp"
       alt="JANA START — юридическая компания, Алматы"
       width="96"
       height="127"

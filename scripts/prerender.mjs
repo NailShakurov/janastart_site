@@ -2,7 +2,9 @@
 //  1) вставляет HTML каждой страницы в dist/<page>, чтобы поисковики и мессенджеры
 //     видели контент без выполнения JS;
 //  2) добавляет в <head> JSON-LD, Google Tag Manager и код подтверждения Search Console;
-//  3) генерирует dist/sitemap.xml из реестра страниц (только индексируемые, с lastmod).
+//  3) встраивает CSS в <style>, чтобы первая отрисовка не ждала отдельного запроса
+//     (на медленном мобильном интернете это лишний круг до сервера);
+//  4) генерирует dist/sitemap.xml из реестра страниц (только индексируемые, с lastmod).
 import { readFile, rm, writeFile } from "node:fs/promises";
 
 const { PAGES, SITE, render } = await import("../dist-ssr/entry-server.js");
@@ -35,6 +37,19 @@ function insertAfter(html, marker, snippet, page) {
   return `${html.slice(0, end)}\n${snippet}${html.slice(end)}`;
 }
 
+// <link rel="stylesheet" href="/assets/….css"> → <style>…</style>. Файл стилей один на весь
+// сайт и небольшой; JS на него не ссылается, так что повторно он не загрузится.
+async function inlineCss(html, page) {
+  const re = /<link rel="stylesheet"[^>]*href="\/(assets\/[^"]+\.css)"[^>]*>/g;
+  const links = [...html.matchAll(re)];
+  if (!links.length) throw new Error(`Не найден <link rel="stylesheet"> в ${page}`);
+  for (const [tag, file] of links) {
+    const css = (await readFile(dist(file), "utf8")).replace(/<\/style/gi, "<\\/style");
+    html = html.replace(tag, () => `<style>${css}</style>`);
+  }
+  return html;
+}
+
 function insertBefore(html, marker, snippet, page) {
   const i = html.indexOf(marker);
   if (i < 0) throw new Error(`Маркер «${marker}» не найден в ${page}`);
@@ -45,6 +60,7 @@ for (const page of PAGES) {
   let html = await readFile(dist(page.file), "utf8");
   if (!html.includes("<!--app-->")) throw new Error(`Маркер <!--app--> не найден в ${page.file}`);
   html = html.replace("<!--app-->", render(page));
+  html = await inlineCss(html, page.file);
 
   // GTM — как можно выше в <head>, сразу после кодировки.
   if (SITE.gtmId) {

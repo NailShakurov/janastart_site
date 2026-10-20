@@ -11,7 +11,7 @@ import {
   Process,
   Why,
 } from "./sections";
-import { Footer, Header, Page } from "./ui";
+import { ContactBar, Footer, Header, Page } from "./ui";
 
 export function App() {
   return (
@@ -28,6 +28,7 @@ export function App() {
         <Contact />
       </main>
       <Footer policyHref={POLICY_HREF} />
+      <ContactBar />
     </Page>
   );
 }

@@ -1,6 +1,6 @@
 // Страница 404: GitHub Pages отдаёт dist/404.html с кодом 404 для несуществующих адресов.
 import { HOME_NAV, POLICY_HREF } from "../content";
-import { Footer, H2, Header, Page, WRAP, BTN_MAIN } from "../ui";
+import { ContactBar, Footer, H2, Header, Page, WRAP, BTN_MAIN } from "../ui";
 
 export function NotFound() {
   return (
@@ -27,6 +27,7 @@ export function NotFound() {
         </section>
       </main>
       <Footer homeHref="/" policyHref={POLICY_HREF} />
+      <ContactBar />
     </Page>
   );
 }

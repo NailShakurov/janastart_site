@@ -1,11 +1,13 @@
 // Общие классы и элементы оформления: шапка, подвал, поля формы.
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ONLAIN_HREF, type NavItem } from "./content";
 import type { Crumb } from "./seo";
-import { SITE } from "./site";
+import { SITE, whatsappLink } from "./site";
 import { track, type LinkLocation } from "./tracking";
 
-export const WRAP = "mx-auto max-w-[1080px] px-5";
+// Боковые отступы не меньше выреза iPhone в альбомной ориентации (viewport-fit=cover в index.html)
+export const WRAP =
+  "mx-auto max-w-[1080px] pl-[max(20px,env(safe-area-inset-left))] pr-[max(20px,env(safe-area-inset-right))]";
 export const SECTION = "py-[72px]";
 export const H2 = "text-[clamp(28px,4vw,40px)] font-bold";
 export const H3 = "text-[21px] font-bold";
@@ -234,6 +236,66 @@ export function Footer({
         </p>
       </div>
     </footer>
+  );
+}
+
+/**
+ * Закреплённая внизу панель «Позвонить» / «WhatsApp» на экранах уже 768px (md).
+ * Прячется, пока на экране форма заявки ([data-lead-form]) или открыта клавиатура
+ * (фокус в поле ввода). Распорка под подвалом не даёт панели перекрыть его.
+ */
+export function ContactBar() {
+  const [formVisible, setFormVisible] = useState(false);
+  const [typing, setTyping] = useState(false);
+
+  useEffect(() => {
+    const form = document.querySelector("[data-lead-form]");
+    let observer: IntersectionObserver | undefined;
+    if (form && "IntersectionObserver" in window) {
+      observer = new IntersectionObserver(([entry]) =>
+        setFormVisible(entry?.isIntersecting ?? false),
+      );
+      observer.observe(form);
+    }
+    const isField = (t: EventTarget | null) =>
+      t instanceof HTMLElement && t.matches("input, textarea, select, [contenteditable]");
+    const onFocusIn = (e: FocusEvent) => isField(e.target) && setTyping(true);
+    const onFocusOut = (e: FocusEvent) => isField(e.target) && setTyping(false);
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
+    };
+  }, []);
+
+  const hidden = formVisible || typing;
+  return (
+    <>
+      <div aria-hidden="true" className="h-[calc(4rem+env(safe-area-inset-bottom))] md:hidden" />
+      <div
+        inert={hidden}
+        className={`fixed inset-x-0 bottom-0 z-30 flex gap-2 bg-ink px-[max(12px,env(safe-area-inset-left))] pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-4px_16px_rgba(20,26,51,0.25)] transition-transform duration-200 motion-reduce:transition-none md:hidden ${hidden ? "translate-y-full" : ""}`}
+      >
+        <a
+          href={SITE.phoneHref}
+          onClick={onPhoneClick("sticky_bar")}
+          className="flex h-12 flex-1 items-center justify-center rounded-md border-2 border-white/50 font-bold text-white transition-colors hover:bg-white/10"
+        >
+          Позвонить
+        </a>
+        <a
+          href={whatsappLink()}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={onWhatsappClick("sticky_bar")}
+          className="flex h-12 flex-1 items-center justify-center rounded-md bg-dawn font-bold text-ink transition-colors hover:bg-dawn-hover"
+        >
+          WhatsApp
+        </a>
+      </div>
+    </>
   );
 }
 

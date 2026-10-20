@@ -421,166 +421,169 @@ export function Contact({
           </ul>
         </div>
 
-        {submitted ? (
-          <div
-            className="rounded-[10px] border border-line bg-paper p-[26px] text-center"
-            role="status"
-          >
-            <span className="mx-auto grid size-14 place-items-center rounded-full bg-green font-serif text-2xl font-bold text-white">
-              ✓
-            </span>
-            <h3 className={`${H3} mt-5`}>Почти готово</h3>
-            <p className="mt-3 text-ink2">
-              {name.trim()}, мы открыли WhatsApp с готовым сообщением — просто нажмите «Отправить».
-              Если окно не открылось,{" "}
-              <a
-                className="font-bold text-dawn-dark underline"
-                href={whatsappLink(
-                  `Здравствуйте! Хочу получить бесплатную консультацию. Имя: ${name.trim()}, телефон: ${phone.trim()}, город: ${city}, тема: ${topic}`,
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={onWhatsappClick("form")}
-              >
-                нажмите здесь
-              </a>{" "}
-              или позвоните:{" "}
-              <a
-                href={SITE.phoneHref}
-                onClick={onPhoneClick("form")}
-                className="font-bold text-ink"
-              >
-                {SITE.phone}
-              </a>
-              .
-            </p>
-          </div>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            noValidate
-            className="space-y-3.5 rounded-[10px] border border-line bg-paper p-[26px]"
-          >
-            <Field id="name" label="Ваше имя">
-              <input
-                id="name"
-                type="text"
-                autoComplete="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Например, Айгерим"
-                className={INPUT}
-              />
-            </Field>
-            <Field id="phone" label="Телефон">
-              <input
-                id="phone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+7 7__ ___-__-__"
-                className={INPUT}
-              />
-            </Field>
-            <fieldset>
-              <legend className="text-[15px] font-bold">Кто вы</legend>
-              <div className="mt-1.5 grid grid-cols-3 gap-2">
-                {WHO_OPTIONS.map((opt) => (
-                  <label
-                    key={opt}
-                    className="cursor-pointer rounded-md border border-[#b9c1d3] bg-white px-2 py-3 text-center text-sm font-semibold has-checked:border-ink has-checked:bg-ink has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-dawn"
-                  >
-                    <input
-                      type="radio"
-                      name="who"
-                      value={opt}
-                      checked={who === opt}
-                      onChange={() => setWho(opt)}
-                      className="sr-only"
-                    />
-                    {opt}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-            <Field id="city" label="Город">
-              <select
-                id="city"
-                name="city"
-                required
-                autoComplete="address-level2"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className={`${INPUT} ${city ? "" : "text-[#6b7280]"}`}
-              >
-                <option value="" disabled>
-                  Выберите город
-                </option>
-                {CITY_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field id="topic" label="Тема обращения">
-              <select
-                id="topic"
-                name="topic"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                className={INPUT}
-              >
-                {TOPIC_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <label htmlFor="agree" className="flex cursor-pointer items-start gap-2.5 text-sm">
-              <input
-                id="agree"
-                type="checkbox"
-                checked={agree}
-                onChange={(e) => setAgree(e.target.checked)}
-                className="mt-1 size-4 shrink-0 accent-green"
-              />
-              <span>
-                Согласен(на) на сбор и обработку персональных данных (
-                <a
-                  href={POLICY_HREF}
-                  target="_blank"
-                  rel="noopener"
-                  className="underline underline-offset-2"
-                >
-                  политика конфиденциальности
-                </a>
-                )
+        {/* data-lead-form: по нему ContactBar прячет мобильную панель, пока форма на экране */}
+        <div data-lead-form>
+          {submitted ? (
+            <div
+              className="rounded-[10px] border border-line bg-paper p-[26px] text-center"
+              role="status"
+            >
+              <span className="mx-auto grid size-14 place-items-center rounded-full bg-green font-serif text-2xl font-bold text-white">
+                ✓
               </span>
-            </label>
-            {error && (
-              <p className="text-sm font-semibold text-[#b42318]" role="alert">
-                {error}
+              <h3 className={`${H3} mt-5`}>Почти готово</h3>
+              <p className="mt-3 text-ink2">
+                {name.trim()}, мы открыли WhatsApp с готовым сообщением — просто нажмите
+                «Отправить». Если окно не открылось,{" "}
+                <a
+                  className="font-bold text-dawn-dark underline"
+                  href={whatsappLink(
+                    `Здравствуйте! Хочу получить бесплатную консультацию. Имя: ${name.trim()}, телефон: ${phone.trim()}, город: ${city}, тема: ${topic}`,
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={onWhatsappClick("form")}
+                >
+                  нажмите здесь
+                </a>{" "}
+                или позвоните:{" "}
+                <a
+                  href={SITE.phoneHref}
+                  onClick={onPhoneClick("form")}
+                  className="font-bold text-ink"
+                >
+                  {SITE.phone}
+                </a>
+                .
               </p>
-            )}
-            <button type="submit" className={`${BTN_DARK} w-full text-[17px]`}>
-              Получить консультацию в WhatsApp
-            </button>
-            <p className="text-center text-[15px] text-ink2">
-              Или позвоните:{" "}
-              <a
-                href={SITE.phoneHref}
-                onClick={onPhoneClick("form")}
-                className="font-bold text-ink"
-              >
-                {SITE.phone}
-              </a>
-            </p>
-          </form>
-        )}
+            </div>
+          ) : (
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              className="space-y-3.5 rounded-[10px] border border-line bg-paper p-[26px]"
+            >
+              <Field id="name" label="Ваше имя">
+                <input
+                  id="name"
+                  type="text"
+                  autoComplete="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Например, Айгерим"
+                  className={INPUT}
+                />
+              </Field>
+              <Field id="phone" label="Телефон">
+                <input
+                  id="phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+7 7__ ___-__-__"
+                  className={INPUT}
+                />
+              </Field>
+              <fieldset>
+                <legend className="text-[15px] font-bold">Кто вы</legend>
+                <div className="mt-1.5 grid grid-cols-3 gap-2">
+                  {WHO_OPTIONS.map((opt) => (
+                    <label
+                      key={opt}
+                      className="cursor-pointer rounded-md border border-[#b9c1d3] bg-white px-2 py-3 text-center text-sm font-semibold has-checked:border-ink has-checked:bg-ink has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-dawn"
+                    >
+                      <input
+                        type="radio"
+                        name="who"
+                        value={opt}
+                        checked={who === opt}
+                        onChange={() => setWho(opt)}
+                        className="sr-only"
+                      />
+                      {opt}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <Field id="city" label="Город">
+                <select
+                  id="city"
+                  name="city"
+                  required
+                  autoComplete="address-level2"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className={`${INPUT} ${city ? "" : "text-[#6b7280]"}`}
+                >
+                  <option value="" disabled>
+                    Выберите город
+                  </option>
+                  {CITY_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field id="topic" label="Тема обращения">
+                <select
+                  id="topic"
+                  name="topic"
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  className={INPUT}
+                >
+                  {TOPIC_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <label htmlFor="agree" className="flex cursor-pointer items-start gap-2.5 text-sm">
+                <input
+                  id="agree"
+                  type="checkbox"
+                  checked={agree}
+                  onChange={(e) => setAgree(e.target.checked)}
+                  className="mt-1 size-4 shrink-0 accent-green"
+                />
+                <span>
+                  Согласен(на) на сбор и обработку персональных данных (
+                  <a
+                    href={POLICY_HREF}
+                    target="_blank"
+                    rel="noopener"
+                    className="underline underline-offset-2"
+                  >
+                    политика конфиденциальности
+                  </a>
+                  )
+                </span>
+              </label>
+              {error && (
+                <p className="text-sm font-semibold text-[#b42318]" role="alert">
+                  {error}
+                </p>
+              )}
+              <button type="submit" className={`${BTN_DARK} w-full text-[17px]`}>
+                Получить консультацию в WhatsApp
+              </button>
+              <p className="text-center text-[15px] text-ink2">
+                Или позвоните:{" "}
+                <a
+                  href={SITE.phoneHref}
+                  onClick={onPhoneClick("form")}
+                  className="font-bold text-ink"
+                >
+                  {SITE.phone}
+                </a>
+              </p>
+            </form>
+          )}
+        </div>
       </div>
     </section>
   );

@@ -3,7 +3,7 @@
 import { ONLAIN_HREF, POLICY_HREF, type NavItem } from "../content";
 import { Bankruptcy, Contact, Faq, Hero, Process } from "../sections";
 import { BANKRUPTCY_CRUMBS } from "../seo";
-import { Footer, Header, Page } from "../ui";
+import { ContactBar, Footer, Header, Page } from "../ui";
 
 const NAV: NavItem[] = [
   { label: "Банкротство", href: "#bankruptcy" },
@@ -30,6 +30,7 @@ export function Bankrotstvo() {
         <Contact />
       </main>
       <Footer homeHref="/" policyHref={POLICY_HREF} />
+      <ContactBar />
     </Page>
   );
 }

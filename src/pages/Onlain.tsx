@@ -3,7 +3,7 @@ import { POLICY_HREF, SUBPAGE_NAV } from "../content";
 import { ONLAIN, ONLAIN_COURT, ONLAIN_FAQ, ONLAIN_STEPS, ONLAIN_WHY } from "../content-onlain";
 import { Contact, Faq, Hero, Process, Why } from "../sections";
 import { ONLAIN_CRUMBS } from "../seo";
-import { Footer, H2, Header, Page, SECTION, WRAP } from "../ui";
+import { ContactBar, Footer, H2, Header, Page, SECTION, WRAP } from "../ui";
 
 export function Onlain() {
   return (
@@ -37,6 +37,7 @@ export function Onlain() {
         <Contact intro={ONLAIN.cta} />
       </main>
       <Footer homeHref="/" policyHref={POLICY_HREF} />
+      <ContactBar />
     </Page>
   );
 }

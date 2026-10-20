@@ -49,12 +49,12 @@ export function getUtm(): Record<string, string> {
 /**
  * События конверсий. Имена и параметры согласованы с ТЗ по SEO/аналитике:
  * - form_submit: client_type (поле «Кто вы»), lead_topic (поле «Тема»), lead_city (поле «Город»);
- * - phone_click, whatsapp_click: link_location (header | hero | contacts | form | footer).
+ * - phone_click, whatsapp_click: link_location (header | hero | contacts | form | footer | sticky_bar).
  * Ко всем событиям добавляются page_path и сохранённые UTM.
  */
 export type ConversionEvent = "form_submit" | "whatsapp_click" | "phone_click";
 
-export type LinkLocation = "header" | "hero" | "contacts" | "form" | "footer";
+export type LinkLocation = "header" | "hero" | "contacts" | "form" | "footer" | "sticky_bar";
 
 declare global {
   interface Window {

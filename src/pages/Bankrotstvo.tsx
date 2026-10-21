@@ -1,36 +1,34 @@
-// Посадочная страница под рекламу банкротства: /bankrotstvo/ (F-07).
+// Посадочная страница под рекламу банкротства: /bankrotstvo/ и /kz/bankrotstvo/ (F-07).
 // Хаб раздела: те же процедуры, что на главной, без блока «Другие услуги».
-import { ONLAIN_HREF, POLICY_HREF, type NavItem } from "../content";
+import { POLICY_HREF } from "../content";
+import { LangProvider, useContent, useText, type Lang } from "../i18n";
 import { Bankruptcy, Contact, Faq, Hero, Process } from "../sections";
-import { BANKRUPTCY_CRUMBS } from "../seo";
 import { ContactBar, Footer, Header, Page } from "../ui";
 
-const NAV: NavItem[] = [
-  { label: "Банкротство", href: "#bankruptcy" },
-  { label: "Как работаем", href: "#process" },
-  { label: "Онлайн", href: ONLAIN_HREF },
-  { label: "Вопросы", href: "#faq" },
-  { label: "Контакты", href: "#contact" },
-];
-
-export function Bankrotstvo() {
+function BankrotstvoBody({ homeHref }: { homeHref: string }) {
+  const t = useText();
+  const c = useContent();
   return (
     <Page>
-      <Header nav={NAV} homeHref="/" />
+      <Header nav={c.bankruptcyNav} homeHref={homeHref} />
       <main id="main">
-        <Hero
-          title="Банкротство в Казахстане: новый старт без долгов"
-          tagline={null}
-          lead="Помогаем гражданам, ИП и компаниям законно выйти из долгов: внесудебное и судебное банкротство, восстановление платёжеспособности. Юристы с 20-летним стажем, первая консультация бесплатно."
-          crumbs={BANKRUPTCY_CRUMBS}
-        />
+        <Hero {...t.pages.bankrotstvo} tagline={null} crumbs={c.bankruptcyCrumbs} />
         <Bankruptcy />
         <Process />
         <Faq />
         <Contact />
       </main>
-      <Footer homeHref="/" policyHref={POLICY_HREF} />
+      <Footer homeHref={homeHref} policyHref={POLICY_HREF} />
       <ContactBar />
     </Page>
+  );
+}
+
+export function Bankrotstvo({ lang = "ru" }: { lang?: Lang }) {
+  const kk = lang === "kk";
+  return (
+    <LangProvider lang={lang} altHref={kk ? "/bankrotstvo/" : "/kz/bankrotstvo/"}>
+      <BankrotstvoBody homeHref={kk ? "/kz/" : "/"} />
+    </LangProvider>
   );
 }

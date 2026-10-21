@@ -1,5 +1,6 @@
-// Главная страница janastart.kz
-import { HOME_NAV, POLICY_HREF } from "./content";
+// Главная страница janastart.kz: по-русски (/) и по-казахски (/kz/, lang="kk").
+import { POLICY_HREF } from "./content";
+import { LangProvider, useContent, useText, type Lang } from "./i18n";
 import {
   Bankruptcy,
   Contact,
@@ -13,12 +14,14 @@ import {
 } from "./sections";
 import { ContactBar, Footer, Header, Page } from "./ui";
 
-export function App() {
+function HomeBody() {
+  const t = useText();
+  const c = useContent();
   return (
     <Page>
-      <Header nav={HOME_NAV} />
+      <Header nav={c.nav} />
       <main id="main">
-        <Hero subline={<GeoLine />} />
+        <Hero {...t.pages.home} subline={<GeoLine />} />
         <Marquee />
         <Bankruptcy linkCards />
         <OtherServices />
@@ -30,5 +33,13 @@ export function App() {
       <Footer policyHref={POLICY_HREF} />
       <ContactBar />
     </Page>
+  );
+}
+
+export function App({ lang = "ru" }: { lang?: Lang }) {
+  return (
+    <LangProvider lang={lang} altHref={lang === "kk" ? "/" : "/kz/"}>
+      <HomeBody />
+    </LangProvider>
   );
 }

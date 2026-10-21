@@ -15,6 +15,7 @@ export type UiText = {
     callAria: string;
     consult: string;
     langAria: string;
+    crumbsAria: string;
   };
   /** Подписи переключателя языка — одинаковы в обоих словарях. */
   langNames: { ru: string; kk: string };
@@ -90,6 +91,7 @@ export const UI_RU: UiText = {
     callAria: "Позвонить",
     consult: "Консультация",
     langAria: "Язык сайта",
+    crumbsAria: "Хлебные крошки",
   },
   langNames: { ru: "Рус", kk: "Қаз" },
   site: {

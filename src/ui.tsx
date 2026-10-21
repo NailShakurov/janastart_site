@@ -1,6 +1,7 @@
 // Общие классы и элементы оформления: шапка, подвал, поля формы.
 import { useEffect, useState, type ReactNode } from "react";
 import { ONLAIN_HREF, type NavItem } from "./content";
+import { useText } from "./i18n";
 import type { Crumb } from "./seo";
 import { SITE, whatsappLink } from "./site";
 import { track, type LinkLocation } from "./tracking";
@@ -27,13 +28,14 @@ export const onPhoneClick = (link_location: LinkLocation) => () =>
   track("phone_click", { link_location });
 
 export function Page({ children }: { children: ReactNode }) {
+  const t = useText();
   return (
     <div className="min-h-screen overflow-x-clip bg-paper font-sans text-ink">
       <a
         href="#main"
         className="sr-only z-50 rounded-md bg-dawn px-4 py-2 font-bold text-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
       >
-        Перейти к содержанию
+        {t.skipLink}
       </a>
       {children}
     </div>
@@ -45,21 +47,17 @@ export function Page({ children }: { children: ReactNode }) {
  * масштабируется по высоте. PNG остаётся для JSON-LD (src/seo.ts).
  */
 function LogoMark({ className }: { className: string }) {
+  const t = useText();
   return (
-    <img
-      src="/logo-mark.webp"
-      alt="JANA START — юридическая компания, Алматы"
-      width="96"
-      height="127"
-      className={className}
-    />
+    <img src="/logo-mark.webp" alt={t.logoAlt} width="96" height="127" className={className} />
   );
 }
 
 /** Видимые хлебные крошки для внутренних страниц (дублируют BreadcrumbList в JSON-LD). */
 export function Breadcrumbs({ crumbs, className = "" }: { crumbs: Crumb[]; className?: string }) {
+  const t = useText();
   return (
-    <nav aria-label="Хлебные крошки" className={`text-[15px] text-mist ${className}`}>
+    <nav aria-label={t.header.crumbsAria} className={`text-[15px] text-mist ${className}`}>
       <ol className="flex flex-wrap items-center gap-x-2">
         {crumbs.map((c, i) => {
           const last = i === crumbs.length - 1;
@@ -86,6 +84,7 @@ export function Breadcrumbs({ crumbs, className = "" }: { crumbs: Crumb[]; class
 }
 
 export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: string }) {
+  const t = useText().header;
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <header className="sticky top-0 z-40 bg-ink text-white">
@@ -93,17 +92,14 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
         <a
           href={homeHref}
           className="flex items-center gap-2.5 whitespace-nowrap font-serif text-[22px] font-bold tracking-[0.02em]"
-          aria-label="JANA START — на главную"
+          aria-label={t.homeAria}
         >
           <LogoMark className="h-11 w-auto" />
           <span>
             JANA <b className="text-dawn">START</b>
           </span>
         </a>
-        <nav
-          aria-label="Основная навигация"
-          className="hidden items-center gap-[18px] text-[14px] lg:flex"
-        >
+        <nav aria-label={t.navAria} className="hidden items-center gap-[18px] text-[14px] lg:flex">
           {nav.map((item) => (
             <a
               key={item.href}
@@ -126,7 +122,7 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
           <a
             href={SITE.phoneHref}
             onClick={onPhoneClick("header")}
-            aria-label={`Позвонить: ${SITE.phone}`}
+            aria-label={`${t.callAria}: ${SITE.phone}`}
             title={SITE.phone}
             className="hidden size-11 place-items-center rounded-md border border-white/40 hover:bg-white/10 lg:grid xl:hidden"
           >
@@ -138,14 +134,14 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
             href="#contact"
             className="hidden rounded-md bg-dawn px-5 py-2.5 text-[15px] font-bold text-ink transition-colors hover:bg-dawn-hover sm:inline-block"
           >
-            Консультация
+            {t.consult}
           </a>
           <button
             type="button"
             className="grid size-11 place-items-center rounded-md border border-white/40 lg:hidden"
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
-            aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+            aria-label={menuOpen ? t.closeMenu : t.openMenu}
             onClick={() => setMenuOpen((v) => !v)}
           >
             <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
@@ -171,7 +167,7 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
       {menuOpen && (
         <nav
           id="mobile-menu"
-          aria-label="Мобильная навигация"
+          aria-label={t.mobileNavAria}
           className="border-t border-white/15 lg:hidden"
         >
           <div className={`${WRAP} flex flex-col py-2`}>
@@ -206,6 +202,7 @@ export function Footer({
   homeHref?: string;
   policyHref: string;
 }) {
+  const t = useText();
   return (
     <footer className="bg-ink py-9 text-sm text-footer">
       <div className={WRAP}>
@@ -219,22 +216,22 @@ export function Footer({
           </span>
         </a>
         <p>
-          {SITE.legalName}, БИН {SITE.bin}
+          {t.site.legalName}, {t.site.binLabel} {SITE.bin}
         </p>
         <p className="mt-1.5">
-          {SITE.address}.{" "}
+          {t.site.address}.{" "}
           <a href={ONLAIN_HREF} className="underline underline-offset-2 hover:text-white">
-            {SITE.onlineNote}
+            {t.site.onlineNote}
           </a>
           .
         </p>
-        <p className="mt-1.5">© {SITE.foundedYear} JANA START. Все права защищены.</p>
         <p className="mt-1.5">
-          Сайт носит информационный характер и не является публичной офертой.
+          © {SITE.foundedYear} JANA START. {t.footer.rights}
         </p>
+        <p className="mt-1.5">{t.footer.info}</p>
         <p className="mt-1.5">
           <a href={policyHref} className="underline underline-offset-2 hover:text-white">
-            Политика конфиденциальности
+            {t.footer.policy}
           </a>
         </p>
       </div>
@@ -248,6 +245,7 @@ export function Footer({
  * (фокус в поле ввода). Распорка под подвалом не даёт панели перекрыть его.
  */
 export function ContactBar() {
+  const t = useText();
   const [formVisible, setFormVisible] = useState(false);
   const [typing, setTyping] = useState(false);
 
@@ -286,16 +284,16 @@ export function ContactBar() {
           onClick={onPhoneClick("sticky_bar")}
           className="flex h-12 flex-1 items-center justify-center rounded-md border-2 border-white/50 font-bold text-white transition-colors hover:bg-white/10"
         >
-          Позвонить
+          {t.bar.call}
         </a>
         <a
-          href={whatsappLink()}
+          href={whatsappLink(t.whatsapp.greeting)}
           target="_blank"
           rel="noopener noreferrer"
           onClick={onWhatsappClick("sticky_bar")}
           className="flex h-12 flex-1 items-center justify-center rounded-md bg-dawn font-bold text-ink transition-colors hover:bg-dawn-hover"
         >
-          WhatsApp
+          {t.bar.whatsapp}
         </a>
       </div>
     </>

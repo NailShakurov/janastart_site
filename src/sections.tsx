@@ -1,25 +1,11 @@
 // Блоки страниц: hero, бегущая строка, банкротство, услуги, этапы, FAQ, контакты с формой.
 import { useState, type FormEvent, type ReactNode } from "react";
-import {
-  CITY_OPTIONS,
-  FACTS,
-  FAQ,
-  GEO_LINE,
-  MARQUEE,
-  ONLAIN_HREF,
-  OTHER_SERVICES,
-  POLICY_HREF,
-  PROCEDURES,
-  PROCESS_LEAD,
-  SERVICES,
-  STEPS,
-  TOPIC_OPTIONS,
-  WHO_OPTIONS,
-  WHY,
-} from "./content";
+import { ONLAIN_HREF, POLICY_HREF } from "./content";
+import { useContent, useLang, useText } from "./i18n";
 import type { Crumb } from "./seo";
 import { SITE, whatsappLink } from "./site";
 import { getUtm, track } from "./tracking";
+import { UI_RU } from "./ui-text";
 import {
   BTN_DARK,
   BTN_GHOST,
@@ -46,11 +32,12 @@ const HERO_DISPLAY = "max-w-[14ch] font-serif text-[clamp(38px,7vw,72px)] font-b
  * слоган «Новый старт без долгов» в прежнем стиле.
  */
 export function Hero({
-  title = "Банкротство и юридическая помощь в Алматы",
-  tagline = "Новый старт без долгов",
-  lead = "Jana по-казахски значит «новый». Мы помогаем гражданам, ИП и компаниям выйти из долгов по закону и решаем другие юридические вопросы. Юристы с 20-летним стажем.",
+  title = UI_RU.pages.home.title,
+  tagline = UI_RU.pages.home.tagline,
+  lead = UI_RU.pages.home.lead,
   crumbs,
   subline,
+  kzNote,
   note,
 }: {
   title?: string;
@@ -59,9 +46,13 @@ export function Hero({
   crumbs?: Crumb[];
   /** Строка сразу под слоганом или заголовком (география на главной). */
   subline?: ReactNode;
+  /** «Консультация на казахском» — преимущество на казахских страницах, над вступлением. */
+  kzNote?: string;
   /** Мелкая строка под кнопками (адрес офиса на /onlain/). */
   note?: string;
 }) {
+  const t = useText();
+  const c = useContent();
   return (
     <section id="top" className="relative overflow-hidden bg-ink pb-[150px] pt-[84px] text-white">
       <div
@@ -85,24 +76,25 @@ export function Hero({
           <h1 className={HERO_DISPLAY}>{title}</h1>
         )}
         {subline && <p className="mt-4 text-[17px] text-mist">{subline}</p>}
+        {kzNote && <p className="mt-4 text-[17px] font-bold text-dawn">{kzNote}</p>}
         <p className="mt-5 max-w-[54ch] text-[19px] text-mist-light">{lead}</p>
         <div className="mt-7 flex flex-wrap gap-3">
           <a href="#contact" className={BTN_MAIN}>
-            Бесплатная консультация
+            {t.hero.consult}
           </a>
           <a
-            href={whatsappLink()}
+            href={whatsappLink(t.whatsapp.greeting)}
             target="_blank"
             rel="noopener noreferrer"
             onClick={onWhatsappClick("hero")}
             className={BTN_GHOST}
           >
-            Написать в WhatsApp
+            {t.hero.whatsapp}
           </a>
         </div>
         {note && <p className="mt-5 max-w-[62ch] text-[15px] text-mist">{note}</p>}
         <ul className="mt-11 flex flex-wrap gap-x-9 gap-y-3">
-          {FACTS.map((f) => (
+          {c.facts.map((f) => (
             <li key={f.value} className="max-w-[200px] text-[15px] text-mist">
               <strong className="block font-serif text-[26px] font-bold text-dawn">
                 {f.value}
@@ -118,27 +110,36 @@ export function Hero({
 
 /** «Офис в Алматы · работаем онлайн по всему Казахстану» — строка под слоганом на главной. */
 export function GeoLine() {
+  const { geoLine } = useContent();
+  // /onlain/ есть только по-русски: с казахской страницы из первого экрана на неё не уводим.
+  const online =
+    useLang() === "kk" ? (
+      geoLine.online
+    ) : (
+      <a href={ONLAIN_HREF} className="underline underline-offset-4 hover:text-white">
+        {geoLine.online}
+      </a>
+    );
   return (
     <>
-      {GEO_LINE.office}
+      {geoLine.office}
       <span aria-hidden="true" className="mx-2 text-dawn">
         ·
       </span>
-      <a href={ONLAIN_HREF} className="underline underline-offset-4 hover:text-white">
-        {GEO_LINE.online}
-      </a>
+      {online}
     </>
   );
 }
 
 export function Marquee() {
+  const { marquee } = useContent();
   return (
     <div
       className="overflow-hidden border-b border-line bg-white py-3.5 text-ink2"
       aria-hidden="true"
     >
       <div className="flex w-max animate-marquee gap-10 whitespace-nowrap text-[13px] font-bold uppercase tracking-[0.15em] motion-reduce:animate-none">
-        {[...MARQUEE, ...MARQUEE].map((item, i) => (
+        {[...marquee, ...marquee].map((item, i) => (
           <span key={i} className="flex items-center gap-10">
             {item}
             <span className="text-dawn">✦</span>
@@ -154,6 +155,8 @@ export function Marquee() {
  * на страницы услуг (на главной); на самой странице /bankrotstvo/ ссылки не нужны.
  */
 export function Bankruptcy({ linkCards = false }: { linkCards?: boolean }) {
+  const t = useText().bankruptcy;
+  const c = useContent();
   const cardTitle = (card: { title: string; href: string }) =>
     linkCards ? (
       <a href={card.href} className="hover:underline">
@@ -169,32 +172,24 @@ export function Bankruptcy({ linkCards = false }: { linkCards?: boolean }) {
       <div className={WRAP}>
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className={H2}>Банкротство по закону Казахстана</h2>
-            <p className={LEAD}>
-              Подходящая процедура зависит от суммы долга, просрочки, дохода и имущества. На
-              консультации мы честно скажем, какая из них вам подходит и подходит ли банкротство
-              вообще.
-            </p>
+            <h2 className={H2}>{t.title}</h2>
+            <p className={LEAD}>{t.lead}</p>
           </div>
-          <span className="hidden shrink-0 text-sm font-bold text-ink2 sm:block">
-            03 направления
-          </span>
+          <span className="hidden shrink-0 text-sm font-bold text-ink2 sm:block">{t.count}</span>
         </div>
 
         <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {PROCEDURES.map((p) => (
+          {c.procedures.map((p) => (
             <article key={p.title} className={`${CARD} border-t-[5px] border-t-dawn`}>
               <h3 className={H3}>{cardTitle(p)}</h3>
               <p className="mt-2 text-ink2">{p.text}</p>
             </article>
           ))}
         </div>
-        <p className="mt-3 text-sm text-ink2">
-          Закон РК «О восстановлении платёжеспособности и банкротстве граждан Республики Казахстан»
-        </p>
+        <p className="mt-3 text-sm text-ink2">{t.law}</p>
 
         <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {SERVICES.map((s) => (
+          {c.services.map((s) => (
             <article key={s.title} className={`${CARD} flex flex-col`}>
               <h3 className={H3}>{cardTitle(s)}</h3>
               <p className="mt-2 flex-1 text-ink2">{s.text}</p>
@@ -202,7 +197,7 @@ export function Bankruptcy({ linkCards = false }: { linkCards?: boolean }) {
                 href="#contact"
                 className="mt-4 inline-block font-bold text-dawn-dark hover:underline"
               >
-                Обсудить мою ситуацию →
+                {t.discuss}
               </a>
             </article>
           ))}
@@ -213,16 +208,15 @@ export function Bankruptcy({ linkCards = false }: { linkCards?: boolean }) {
 }
 
 export function OtherServices() {
+  const t = useText().otherServices;
+  const { otherServices } = useContent();
   return (
     <section id="services" className={`${SECTION} border-y border-line bg-white`}>
       <div className={WRAP}>
-        <h2 className={H2}>Юридическая помощь по другим вопросам</h2>
-        <p className={LEAD}>
-          Если у вас не долги, а другая правовая задача, мы тоже поможем: от консультации до
-          представительства в суде.
-        </p>
+        <h2 className={H2}>{t.title}</h2>
+        <p className={LEAD}>{t.lead}</p>
         <dl className="mt-7 grid gap-x-10 md:grid-cols-2">
-          {OTHER_SERVICES.map((s) => (
+          {otherServices.map((s) => (
             <div key={s.title} className="border-t border-line pb-[18px] pt-[18px]">
               <dt className="font-serif text-[20px] font-bold">{s.title}</dt>
               <dd className="mt-1 text-ink2">{s.text}</dd>
@@ -234,18 +228,21 @@ export function OtherServices() {
   );
 }
 
-export function Process({
-  title = "Как мы работаем",
-  lead = PROCESS_LEAD,
-  steps = STEPS,
-  className = "sm:grid-cols-2 lg:grid-cols-4",
-}: {
+export function Process(props: {
   title?: string;
   lead?: string | null;
   steps?: readonly { title: string; text: string }[];
   /** Классы сетки: колонки под число шагов. */
   className?: string;
 }) {
+  const t = useText();
+  const c = useContent();
+  const {
+    title = t.process.title,
+    lead = c.processLead,
+    steps = c.steps,
+    className = "sm:grid-cols-2 lg:grid-cols-4",
+  } = props;
   return (
     <section id="process" className={SECTION}>
       <div className={WRAP}>
@@ -270,15 +267,14 @@ export function Process({
   );
 }
 
-export function Why({
-  title = "Почему JANA START",
-  lead = "Мы строим работу на четырёх правилах.",
-  items = WHY,
-}: {
+export function Why(props: {
   title?: string;
   lead?: string | null;
   items?: readonly { title: string; text: string }[];
 }) {
+  const t = useText();
+  const c = useContent();
+  const { title = t.why.title, lead = t.why.lead, items = c.why } = props;
   return (
     <section id="why" className={`${SECTION} bg-ink text-white`}>
       <div className={WRAP}>
@@ -301,11 +297,14 @@ export function Why({
 }
 
 /** Блок «Частые вопросы». Те же items передаются в faqJsonLd(), чтобы разметка совпадала с текстом. */
-export function Faq({ items = FAQ }: { items?: readonly { q: string; a: string }[] }) {
+export function Faq(props: { items?: readonly { q: string; a: string }[] }) {
+  const t = useText();
+  const c = useContent();
+  const { items = c.faq } = props;
   return (
     <section id="faq" className={SECTION}>
       <div className={WRAP}>
-        <h2 className={H2}>Частые вопросы</h2>
+        <h2 className={H2}>{t.faq.title}</h2>
         <div className="mt-7 max-w-[820px] space-y-2.5">
           {items.map((item) => (
             <details key={item.q} className="group rounded-lg border border-line bg-white">
@@ -325,18 +324,19 @@ export function Faq({ items = FAQ }: { items?: readonly { q: string; a: string }
   );
 }
 
-export function Contact({
-  intro,
-}: {
+export function Contact(props: {
   /** Призыв к действию под заголовком формы. */
   intro?: string;
 }) {
+  const t = useText();
+  const c = useContent();
+  const { intro = t.contact.intro } = props;
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [who, setWho] = useState<string>(WHO_OPTIONS[0]);
+  const [who, setWho] = useState<string>(c.whoOptions[0]);
   // Город без значения по умолчанию и обязателен: в lead_city должны попадать реальные города.
   const [city, setCity] = useState("");
-  const [topic, setTopic] = useState<string>(TOPIC_OPTIONS[0]);
+  const [topic, setTopic] = useState<string>(c.topicOptions[0]);
   const [agree, setAgree] = useState(false);
   // Ловушка для ботов: поле скрыто от людей, заполненное значение отбрасывает приёмник.
   const [website, setWebsite] = useState("");
@@ -347,7 +347,7 @@ export function Contact({
     e.preventDefault();
     const digits = phone.replace(/\D/g, "");
     if (!name.trim() || digits.length < 10 || digits.length > 11 || !city || !agree) {
-      setError("Заполните имя, телефон и город и подтвердите согласие.");
+      setError(t.form.error);
       return;
     }
     setError(null);
@@ -400,13 +400,13 @@ export function Contact({
       <div className={`${WRAP} grid items-start gap-12 md:grid-cols-2`}>
         <div>
           <h2 className={H2}>
-            Оставьте заявку —
+            {t.contact.title1}
             <br />
-            <span className="text-dawn-dark">первая консультация бесплатно.</span>
+            <span className="text-dawn-dark">{t.contact.title2}</span>
           </h2>
           {intro && <p className={LEAD}>{intro}</p>}
           <ul className="mt-6 space-y-4">
-            <ContactRow label="Адрес">
+            <ContactRow label={t.contact.address}>
               {SITE.address}
               {SITE.addressNote && (
                 <>
@@ -415,7 +415,7 @@ export function Contact({
                 </>
               )}
             </ContactRow>
-            <ContactRow label="Телефон">
+            <ContactRow label={t.contact.phone}>
               <a
                 href={SITE.phoneHref}
                 onClick={onPhoneClick("contacts")}
@@ -424,7 +424,7 @@ export function Contact({
                 {SITE.phone}
               </a>
             </ContactRow>
-            <ContactRow label="WhatsApp">
+            <ContactRow label={t.contact.whatsapp}>
               <a
                 href={whatsappLink()}
                 target="_blank"
@@ -434,13 +434,13 @@ export function Contact({
               >
                 {SITE.whatsappLabel}
               </a>
-              , отвечаем быстрее всего
+              {t.contact.whatsappNote}
             </ContactRow>
-            <ContactRow label="E-mail">
+            <ContactRow label={t.contact.email}>
               <a href={`mailto:${SITE.email}`} className="hover:underline">
                 {SITE.email}
               </a>
-              , {SITE.hours}
+              , {t.site.hours}
             </ContactRow>
           </ul>
         </div>
@@ -455,10 +455,9 @@ export function Contact({
               <span className="mx-auto grid size-14 place-items-center rounded-full bg-green font-serif text-2xl font-bold text-white">
                 ✓
               </span>
-              <h3 className={`${H3} mt-5`}>Почти готово</h3>
+              <h3 className={`${H3} mt-5`}>{t.done.title}</h3>
               <p className="mt-3 text-ink2">
-                {name.trim()}, мы открыли WhatsApp с готовым сообщением — просто нажмите
-                «Отправить». Если окно не открылось,{" "}
+                {t.done.text.replace("{name}", name.trim())}
                 <a
                   className="font-bold text-dawn-dark underline"
                   href={whatsappLink(
@@ -468,9 +467,9 @@ export function Contact({
                   rel="noopener noreferrer"
                   onClick={onWhatsappClick("form")}
                 >
-                  нажмите здесь
+                  {t.done.link}
                 </a>{" "}
-                или позвоните:{" "}
+                {t.done.orCall}{" "}
                 <a
                   href={SITE.phoneHref}
                   onClick={onPhoneClick("form")}
@@ -497,18 +496,18 @@ export function Contact({
                 onChange={(e) => setWebsite(e.target.value)}
                 className="absolute -left-[9999px] size-px opacity-0"
               />
-              <Field id="name" label="Ваше имя">
+              <Field id="name" label={t.form.name}>
                 <input
                   id="name"
                   type="text"
                   autoComplete="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Например, Айгерим"
+                  placeholder={t.form.namePlaceholder}
                   className={INPUT}
                 />
               </Field>
-              <Field id="phone" label="Телефон">
+              <Field id="phone" label={t.form.phone}>
                 <input
                   id="phone"
                   type="tel"
@@ -521,9 +520,9 @@ export function Contact({
                 />
               </Field>
               <fieldset>
-                <legend className="text-[15px] font-bold">Кто вы</legend>
+                <legend className="text-[15px] font-bold">{t.form.who}</legend>
                 <div className="mt-1.5 grid grid-cols-3 gap-2">
-                  {WHO_OPTIONS.map((opt) => (
+                  {c.whoOptions.map((opt) => (
                     <label
                       key={opt}
                       className="cursor-pointer rounded-md border border-[#b9c1d3] bg-white px-2 py-3 text-center text-sm font-semibold has-checked:border-ink has-checked:bg-ink has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-dawn"
@@ -541,7 +540,7 @@ export function Contact({
                   ))}
                 </div>
               </fieldset>
-              <Field id="city" label="Город">
+              <Field id="city" label={t.form.city}>
                 <select
                   id="city"
                   name="city"
@@ -552,16 +551,16 @@ export function Contact({
                   className={`${INPUT} ${city ? "" : "text-[#6b7280]"}`}
                 >
                   <option value="" disabled>
-                    Выберите город
+                    {t.form.cityPlaceholder}
                   </option>
-                  {CITY_OPTIONS.map((opt) => (
+                  {c.cityOptions.map((opt) => (
                     <option key={opt} value={opt}>
                       {opt}
                     </option>
                   ))}
                 </select>
               </Field>
-              <Field id="topic" label="Тема обращения">
+              <Field id="topic" label={t.form.topic}>
                 <select
                   id="topic"
                   name="topic"
@@ -569,7 +568,7 @@ export function Contact({
                   onChange={(e) => setTopic(e.target.value)}
                   className={INPUT}
                 >
-                  {TOPIC_OPTIONS.map((opt) => (
+                  {c.topicOptions.map((opt) => (
                     <option key={opt} value={opt}>
                       {opt}
                     </option>
@@ -585,14 +584,14 @@ export function Contact({
                   className="mt-1 size-4 shrink-0 accent-green"
                 />
                 <span>
-                  Согласен(на) на сбор и обработку персональных данных (
+                  {t.form.consent}
                   <a
                     href={POLICY_HREF}
                     target="_blank"
                     rel="noopener"
                     className="underline underline-offset-2"
                   >
-                    политика конфиденциальности
+                    {t.form.consentLink}
                   </a>
                   )
                 </span>
@@ -603,10 +602,10 @@ export function Contact({
                 </p>
               )}
               <button type="submit" className={`${BTN_DARK} w-full text-[17px]`}>
-                Получить консультацию в WhatsApp
+                {t.form.submit}
               </button>
               <p className="text-center text-[15px] text-ink2">
-                Или позвоните:{" "}
+                {t.form.orCall}{" "}
                 <a
                   href={SITE.phoneHref}
                   onClick={onPhoneClick("form")}

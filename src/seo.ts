@@ -3,13 +3,14 @@
 // Проверка: Rich Results Test и Schema Markup Validator.
 import { CONTENT_RU, FAQ } from "./content";
 import { SITE } from "./site";
+import { UI_RU } from "./ui-text";
 
 export const ORG_ID = `${SITE.origin}/#org`;
 
 export type Crumb = { name: string; path: string };
 
-/** LegalService — на всех страницах. */
-export const legalServiceJsonLd = () => ({
+/** LegalService — на всех страницах. description — на языке страницы, адрес всегда русский. */
+export const legalServiceJsonLd = (description: string = UI_RU.seo.orgDescription) => ({
   "@context": "https://schema.org",
   "@type": "LegalService",
   "@id": ORG_ID,
@@ -17,7 +18,7 @@ export const legalServiceJsonLd = () => ({
   url: `${SITE.origin}/`,
   logo: `${SITE.origin}/logo-mark.png`,
   image: `${SITE.origin}/og-image.jpg`,
-  description: "Банкротство граждан, ИП и компаний по закону РК и юридические услуги в Алматы.",
+  description,
   telephone: SITE.phoneHref.replace("tel:", ""),
   email: SITE.email,
   address: {

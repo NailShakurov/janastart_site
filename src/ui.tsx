@@ -1,7 +1,7 @@
 // Общие классы и элементы оформления: шапка, подвал, поля формы.
 import { useEffect, useState, type ReactNode } from "react";
 import { ONLAIN_HREF, type NavItem } from "./content";
-import { useText } from "./i18n";
+import { useAltHref, useLang, useText } from "./i18n";
 import type { Crumb } from "./seo";
 import { SITE, whatsappLink } from "./site";
 import { track, type LinkLocation } from "./tracking";
@@ -83,6 +83,27 @@ export function Breadcrumbs({ crumbs, className = "" }: { crumbs: Crumb[]; class
   );
 }
 
+/** Переключатель «Рус | Қаз»: текущий язык — текст, другой — ссылка на парную страницу. */
+function LangSwitch({ className = "" }: { className?: string }) {
+  const { header, langNames } = useText();
+  const lang = useLang();
+  const altHref = useAltHref();
+  const other = lang === "ru" ? "kk" : "ru";
+  return (
+    <nav aria-label={header.langAria} className={`text-[14px] ${className}`}>
+      <span aria-current="page" className="font-bold">
+        {langNames[lang]}
+      </span>
+      <span aria-hidden="true" className="mx-1.5 opacity-50">
+        |
+      </span>
+      <a href={altHref} className="opacity-85 hover:underline hover:opacity-100">
+        {langNames[other]}
+      </a>
+    </nav>
+  );
+}
+
 export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: string }) {
   const t = useText().header;
   const [menuOpen, setMenuOpen] = useState(false);
@@ -111,6 +132,7 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
           ))}
         </nav>
         <div className="flex items-center gap-4">
+          <LangSwitch className="hidden lg:block" />
           <a
             href={SITE.phoneHref}
             onClick={onPhoneClick("header")}
@@ -181,6 +203,7 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
                 {item.label}
               </a>
             ))}
+            <LangSwitch className="border-b border-white/10 py-4" />
             <a
               href={SITE.phoneHref}
               onClick={onPhoneClick("header")}

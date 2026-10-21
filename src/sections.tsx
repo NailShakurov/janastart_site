@@ -393,7 +393,7 @@ export function Contact(props: {
           {intro && <p className={LEAD}>{intro}</p>}
           <ul className="mt-6 space-y-4">
             <ContactRow label={t.contact.address}>
-              {SITE.address}
+              {t.site.address}
               {SITE.addressNote && (
                 <>
                   <br />

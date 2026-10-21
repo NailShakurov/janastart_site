@@ -412,7 +412,7 @@ export function Contact(props: {
             </ContactRow>
             <ContactRow label={t.contact.whatsapp}>
               <a
-                href={whatsappLink()}
+                href={whatsappLink(t.whatsapp.greeting)}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={onWhatsappClick("contacts")}

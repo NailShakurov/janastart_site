@@ -56,6 +56,7 @@ export default {
       topic: field("topic"),
       page: field("page"),
       source: field("source"),
+      lang: field("lang"),
     };
     const digits = lead.phone.replace(/\D/g, "");
     if (!lead.name || digits.length < 10 || digits.length > 11) return reply(400, { ok: false });
@@ -70,6 +71,8 @@ export default {
 
     const text = [
       "Новая заявка с сайта",
+      // Заявка с казахской страницы (/kz/…): её берёт казахоязычный юрист.
+      lead.lang === "kk" && "Тіл: қазақша",
       `Имя: ${lead.name}`,
       `Телефон: ${lead.phone}`,
       lead.who && `Кто: ${lead.who}`,

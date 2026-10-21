@@ -1,7 +1,8 @@
 // Блоки страниц: hero, бегущая строка, банкротство, услуги, этапы, FAQ, контакты с формой.
 import { useState, type FormEvent, type ReactNode } from "react";
-import { ONLAIN_HREF, POLICY_HREF } from "./content";
+import { CONTENT_RU, ONLAIN_HREF, POLICY_HREF } from "./content";
 import { useContent, useLang, useText } from "./i18n";
+import { buildFallbackText, buildLeadPayload, buildWhatsappText, formSubmitParams } from "./lead";
 import type { Crumb } from "./seo";
 import { SITE, whatsappLink } from "./site";
 import { getUtm, track } from "./tracking";
@@ -330,6 +331,7 @@ export function Contact(props: {
 }) {
   const t = useText();
   const c = useContent();
+  const lang = useLang();
   const { intro = t.contact.intro } = props;
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -355,17 +357,8 @@ export function Contact(props: {
     const source = Object.entries(utm)
       .map(([k, v]) => `${k}=${v}`)
       .join(", ");
-    const text = [
-      "Здравствуйте! Хочу получить бесплатную консультацию.",
-      `Имя: ${name.trim()}`,
-      `Телефон: ${phone.trim()}`,
-      `Кто: ${who}`,
-      `Город: ${city}`,
-      `Тема: ${topic}`,
-      source ? `Источник: ${source}` : null,
-    ]
-      .filter(Boolean)
-      .join("\n");
+    const lead = { name: name.trim(), phone: phone.trim(), who, city, topic };
+    const text = buildWhatsappText(t.whatsapp, lead, source);
     // Копия заявки в Telegram и на почту — на случай, если клиент не нажмёт «Отправить»
     // в WhatsApp. keepalive — запрос доживает до открытия новой вкладки; text/plain и
     // no-cors — без preflight, ответ нам не нужен. Ошибку глотаем: WhatsApp остаётся
@@ -376,21 +369,14 @@ export function Contact(props: {
         mode: "no-cors",
         keepalive: true,
         headers: { "Content-Type": "text/plain;charset=UTF-8" },
-        body: JSON.stringify({
-          name: name.trim(),
-          phone: phone.trim(),
-          who,
-          city,
-          topic,
-          page: window.location.pathname,
-          source,
-          website,
-        }),
+        body: JSON.stringify(
+          buildLeadPayload(lead, { page: window.location.pathname, source, website, lang }),
+        ),
       }).catch(() => {});
     }
     // Событие уходит в dataLayer до открытия WhatsApp. Задержка не нужна: wa.me
     // открывается в новой вкладке, страница с формой остаётся и тег успевает отправиться.
-    track("form_submit", { client_type: who, lead_topic: topic, lead_city: city });
+    track("form_submit", formSubmitParams(c, CONTENT_RU, lead));
     window.open(whatsappLink(text), "_blank", "noopener");
     setSubmitted(true);
   };
@@ -461,7 +447,13 @@ export function Contact(props: {
                 <a
                   className="font-bold text-dawn-dark underline"
                   href={whatsappLink(
-                    `Здравствуйте! Хочу получить бесплатную консультацию. Имя: ${name.trim()}, телефон: ${phone.trim()}, город: ${city}, тема: ${topic}`,
+                    buildFallbackText(t.whatsapp, {
+                      name: name.trim(),
+                      phone: phone.trim(),
+                      who,
+                      city,
+                      topic,
+                    }),
                   )}
                   target="_blank"
                   rel="noopener noreferrer"

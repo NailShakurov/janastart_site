@@ -62,10 +62,18 @@ declare global {
   }
 }
 
-/** Кладёт событие конверсии в dataLayer для Google Tag Manager. Без GTM на странице ничего не делает. */
+/**
+ * Кладёт событие конверсии в dataLayer для Google Tag Manager. Без GTM на странице ничего не делает.
+ * page_lang — язык страницы из <html lang>: отчёты можно делить по языку, значения параметров при этом русские.
+ */
 export function track(event: ConversionEvent, data: Record<string, string> = {}) {
   if (!isBrowser()) return;
-  const payload = { ...getUtm(), page_path: window.location.pathname, ...data };
+  const payload = {
+    ...getUtm(),
+    page_path: window.location.pathname,
+    page_lang: document.documentElement.lang || "ru",
+    ...data,
+  };
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event, ...payload });
 }

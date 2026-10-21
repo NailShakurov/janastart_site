@@ -197,3 +197,58 @@ export const TOPIC_OPTIONS = [
 
 /** Адрес страницы политики конфиденциальности. */
 export const POLICY_HREF = "/politika/";
+
+/**
+ * Форма словаря содержимого: русский — CONTENT_RU (ниже), казахский — content.kk.ts.
+ * Пропущенный ключ в переводе — ошибка tsc. Списки вариантов формы — кортежи фиксированной
+ * длины: в dataLayer уходит русское значение по индексу выбранного (src/lead.ts).
+ */
+export type Content = {
+  /** Меню главной. */
+  nav: NavItem[];
+  /** Меню страницы банкротства. */
+  bankruptcyNav: NavItem[];
+  /** Крошки страницы банкротства: главная → банкротство. */
+  bankruptcyCrumbs: { name: string; path: string }[];
+  marquee: string[];
+  facts: { value: string; label: string }[];
+  procedures: ServiceCard[];
+  services: ServiceCard[];
+  otherServices: { title: string; text: string }[];
+  processLead: string;
+  steps: { title: string; text: string }[];
+  why: { title: string; text: string }[];
+  faq: { q: string; a: string }[];
+  whoOptions: readonly [string, string, string];
+  cityOptions: readonly [string, string, string, string, string];
+  topicOptions: readonly [string, string, string, string];
+  geoLine: { office: string; online: string };
+};
+
+export const CONTENT_RU: Content = {
+  nav: HOME_NAV,
+  bankruptcyNav: [
+    { label: "Банкротство", href: "#bankruptcy" },
+    { label: "Как работаем", href: "#process" },
+    { label: "Онлайн", href: ONLAIN_HREF },
+    { label: "Вопросы", href: "#faq" },
+    { label: "Контакты", href: "#contact" },
+  ],
+  bankruptcyCrumbs: [
+    { name: "Главная", path: "/" },
+    { name: "Банкротство", path: BANKRUPTCY_HREF },
+  ],
+  marquee: MARQUEE,
+  facts: FACTS,
+  procedures: PROCEDURES,
+  services: SERVICES,
+  otherServices: OTHER_SERVICES,
+  processLead: PROCESS_LEAD,
+  steps: STEPS,
+  why: WHY,
+  faq: FAQ,
+  whoOptions: WHO_OPTIONS,
+  cityOptions: CITY_OPTIONS,
+  topicOptions: TOPIC_OPTIONS,
+  geoLine: GEO_LINE,
+};

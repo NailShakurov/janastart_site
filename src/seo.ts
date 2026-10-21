@@ -1,7 +1,7 @@
 // Микроразметка schema.org (JSON-LD). Блоки вставляются в <head> при сборке
 // (scripts/prerender.mjs) по описанию страниц в entry-server.tsx.
 // Проверка: Rich Results Test и Schema Markup Validator.
-import { FAQ } from "./content";
+import { CONTENT_RU, FAQ } from "./content";
 import { SITE } from "./site";
 
 export const ORG_ID = `${SITE.origin}/#org`;
@@ -88,10 +88,7 @@ export const serviceJsonLd = (opts: {
 });
 
 export const HOME_CRUMB: Crumb = { name: "Главная", path: "/" };
-export const BANKRUPTCY_CRUMBS: Crumb[] = [
-  HOME_CRUMB,
-  { name: "Банкротство", path: "/bankrotstvo/" },
-];
+export const BANKRUPTCY_CRUMBS: Crumb[] = CONTENT_RU.bankruptcyCrumbs;
 export const ONLAIN_CRUMBS: Crumb[] = [HOME_CRUMB, { name: "Юрист онлайн", path: "/onlain/" }];
 export const POLICY_CRUMBS: Crumb[] = [
   HOME_CRUMB,

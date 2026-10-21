@@ -3,7 +3,9 @@
 // работают без провайдера. Выбор языка нигде не запоминается, автоперенаправления нет.
 import { createContext, useContext, type ReactNode } from "react";
 import { CONTENT_RU, type Content } from "./content";
+import { CONTENT_KK } from "./content.kk";
 import { UI_RU, type UiText } from "./ui-text";
+import { UI_KK } from "./ui-text.kk";
 
 export type Lang = "ru" | "kk";
 
@@ -15,9 +17,8 @@ type LangState = {
 
 const LangContext = createContext<LangState>({ lang: "ru", altHref: "/kz/" });
 
-// Казахские словари подключаются в Task 5 (content.kk.ts, ui-text.kk.ts).
-const UI: Record<Lang, UiText> = { ru: UI_RU, kk: UI_RU };
-const CONTENT: Record<Lang, Content> = { ru: CONTENT_RU, kk: CONTENT_RU };
+const UI: Record<Lang, UiText> = { ru: UI_RU, kk: UI_KK };
+const CONTENT: Record<Lang, Content> = { ru: CONTENT_RU, kk: CONTENT_KK };
 
 export function LangProvider({
   lang,

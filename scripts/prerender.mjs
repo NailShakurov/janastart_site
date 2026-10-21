@@ -4,8 +4,10 @@
 //  2) добавляет в <head> JSON-LD, Google Tag Manager и код подтверждения Search Console;
 //  3) встраивает CSS в <style>, чтобы первая отрисовка не ждала отдельного запроса
 //     (на медленном мобильном интернете это лишний круг до сервера);
-//  4) генерирует dist/sitemap.xml из реестра страниц (только индексируемые, с lastmod).
+//  4) ставит hreflang для пар страниц ru ↔ kk (scripts/hreflang.mjs);
+//  5) генерирует dist/sitemap.xml из реестра страниц (только индексируемые, с lastmod).
 import { readFile, rm, writeFile } from "node:fs/promises";
+import { hreflangTags } from "./hreflang.mjs";
 
 const { PAGES, SITE, render } = await import("../dist-ssr/entry-server.js");
 
@@ -68,7 +70,7 @@ for (const page of PAGES) {
     html = insertAfter(html, "<body>", gtmBody(SITE.gtmId), page.file);
   }
 
-  const head = [];
+  const head = [...hreflangTags(page, PAGES, SITE.origin)];
   if (SITE.googleSiteVerification) {
     head.push(`<meta name="google-site-verification" content="${SITE.googleSiteVerification}" />`);
   }

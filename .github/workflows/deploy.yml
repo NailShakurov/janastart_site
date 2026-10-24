@@ -53,6 +53,6 @@ jobs:
       - name: Purge Cloudflare cache
         if: env.CF_TOKEN != ''
         run: |
-          curl -fsS -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/purge_cache" \
+          curl -sS --fail-with-body -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE/purge_cache" \
             -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" \
             --data '{"purge_everything":true}'

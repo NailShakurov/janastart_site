@@ -8,7 +8,7 @@ import { Breadcrumbs, Footer, H2, Header, Page, WRAP } from "../ui";
 
 // При включении SITE.leadEndpoint текст разделов 5 и 8 меняется — обновить дату редакции.
 // При подключении почты через Resend добавить его в раздел 5.
-const UPDATED = "20 октября 2026 года";
+const UPDATED = "24 октября 2026 года";
 
 function Section({ n, title, children }: { n: number; title: string; children: ReactNode }) {
   return (
@@ -87,6 +87,7 @@ export function Politika() {
                 "имя;",
                 "номер телефона;",
                 "кто вы: физическое лицо, индивидуальный предприниматель или компания;",
+                "город;",
                 "тема обращения из списка на Сайте;",
                 "содержание вашего сообщения или вопроса, если вы его напишете.",
               ]}

@@ -1,5 +1,4 @@
 // Главная страница janastart.kz: по-русски (/) и по-казахски (/kz/, lang="kk").
-import { POLICY_HREF } from "./content";
 import { LangProvider, useContent, useText, type Lang } from "./i18n";
 import {
   Bankruptcy,
@@ -30,7 +29,7 @@ function HomeBody() {
         <Faq />
         <Contact />
       </main>
-      <Footer policyHref={POLICY_HREF} />
+      <Footer />
       <ContactBar />
     </Page>
   );

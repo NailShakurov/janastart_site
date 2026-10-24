@@ -223,6 +223,12 @@ export type Content = {
   cityOptions: readonly [string, string, string, string, string];
   topicOptions: readonly [string, string, string, string];
   geoLine: { office: string; online: string };
+  /** Меню внутренних страниц (/onlain/, /politika/): якоря ведут на блоки главной. */
+  subpageNav: NavItem[];
+  /** Страница «Юрист онлайн» на языке словаря. */
+  onlainHref: string;
+  /** Политика конфиденциальности на языке словаря. */
+  policyHref: string;
 };
 
 export const CONTENT_RU: Content = {
@@ -251,4 +257,7 @@ export const CONTENT_RU: Content = {
   cityOptions: CITY_OPTIONS,
   topicOptions: TOPIC_OPTIONS,
   geoLine: GEO_LINE,
+  subpageNav: SUBPAGE_NAV,
+  onlainHref: ONLAIN_HREF,
+  policyHref: POLICY_HREF,
 };

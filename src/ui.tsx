@@ -1,7 +1,7 @@
 // Общие классы и элементы оформления: шапка, подвал, поля формы.
 import { useEffect, useState, type ReactNode } from "react";
-import { ONLAIN_HREF, type NavItem } from "./content";
-import { useAltHref, useLang, useText } from "./i18n";
+import type { NavItem } from "./content";
+import { useAltHref, useContent, useLang, useText } from "./i18n";
 import type { Crumb } from "./seo";
 import { SITE, whatsappLink } from "./site";
 import { track, type LinkLocation } from "./tracking";
@@ -112,7 +112,7 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
       <div className={`${WRAP} flex min-h-16 items-center justify-between gap-4`}>
         <a
           href={homeHref}
-          className="flex items-center gap-2.5 whitespace-nowrap font-serif text-[22px] font-bold tracking-[0.02em]"
+          className="flex shrink-0 items-center gap-2.5 whitespace-nowrap font-serif text-[22px] font-bold tracking-[0.02em]"
           aria-label={t.homeAria}
         >
           <LogoMark className="h-11 w-auto" />
@@ -120,7 +120,7 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
             JANA <b className="text-dawn">START</b>
           </span>
         </a>
-        <nav aria-label={t.navAria} className="hidden items-center gap-[18px] text-[14px] lg:flex">
+        <nav aria-label={t.navAria} className="hidden items-center gap-[14px] text-[14px] xl:flex">
           {nav.map((item) => (
             <a
               key={item.href}
@@ -131,22 +131,22 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
             </a>
           ))}
         </nav>
-        <div className="flex items-center gap-4">
-          <LangSwitch className="hidden lg:block" />
+        <div className="flex items-center gap-3">
+          <LangSwitch className="hidden whitespace-nowrap xl:block" />
           <a
             href={SITE.phoneHref}
             onClick={onPhoneClick("header")}
-            className="hidden whitespace-nowrap font-bold md:block lg:hidden xl:block"
+            className="hidden whitespace-nowrap font-bold md:block xl:hidden"
           >
             {SITE.phone}
           </a>
-          {/* На 1024–1279px номер не помещается рядом с меню — остаётся иконка со ссылкой tel: */}
+          {/* Рядом с полным меню (6 пунктов + язык) номер не помещается — остаётся иконка tel: */}
           <a
             href={SITE.phoneHref}
             onClick={onPhoneClick("header")}
             aria-label={`${t.callAria}: ${SITE.phone}`}
             title={SITE.phone}
-            className="hidden size-11 place-items-center rounded-md border border-white/40 hover:bg-white/10 lg:grid xl:hidden"
+            className="hidden size-11 place-items-center rounded-md border border-white/40 hover:bg-white/10 xl:grid"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
               <path d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z" />
@@ -154,13 +154,13 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
           </a>
           <a
             href="#contact"
-            className="hidden rounded-md bg-dawn px-5 py-2.5 text-[15px] font-bold text-ink transition-colors hover:bg-dawn-hover sm:inline-block"
+            className="hidden whitespace-nowrap rounded-md bg-dawn px-5 py-2.5 text-[15px] font-bold text-ink transition-colors hover:bg-dawn-hover sm:inline-block"
           >
             {t.consult}
           </a>
           <button
             type="button"
-            className="grid size-11 place-items-center rounded-md border border-white/40 lg:hidden"
+            className="grid size-11 place-items-center rounded-md border border-white/40 xl:hidden"
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             aria-label={menuOpen ? t.closeMenu : t.openMenu}
@@ -190,7 +190,7 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
         <nav
           id="mobile-menu"
           aria-label={t.mobileNavAria}
-          className="border-t border-white/15 lg:hidden"
+          className="border-t border-white/15 xl:hidden"
         >
           <div className={`${WRAP} flex flex-col py-2`}>
             {nav.map((item) => (
@@ -218,14 +218,9 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
   );
 }
 
-export function Footer({
-  homeHref = "#top",
-  policyHref,
-}: {
-  homeHref?: string;
-  policyHref: string;
-}) {
+export function Footer({ homeHref = "#top" }: { homeHref?: string }) {
   const t = useText();
+  const c = useContent();
   return (
     <footer className="bg-ink py-9 text-sm text-footer">
       <div className={WRAP}>
@@ -243,7 +238,7 @@ export function Footer({
         </p>
         <p className="mt-1.5">
           {t.site.address}.{" "}
-          <a href={ONLAIN_HREF} className="underline underline-offset-2 hover:text-white">
+          <a href={c.onlainHref} className="underline underline-offset-2 hover:text-white">
             {t.site.onlineNote}
           </a>
           .
@@ -253,7 +248,7 @@ export function Footer({
         </p>
         <p className="mt-1.5">{t.footer.info}</p>
         <p className="mt-1.5">
-          <a href={policyHref} className="underline underline-offset-2 hover:text-white">
+          <a href={c.policyHref} className="underline underline-offset-2 hover:text-white">
             {t.footer.policy}
           </a>
         </p>

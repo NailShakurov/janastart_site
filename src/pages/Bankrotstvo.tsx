@@ -1,6 +1,5 @@
 // Посадочная страница под рекламу банкротства: /bankrotstvo/ и /kz/bankrotstvo/ (F-07).
 // Хаб раздела: те же процедуры, что на главной, без блока «Другие услуги».
-import { POLICY_HREF } from "../content";
 import { LangProvider, useContent, useText, type Lang } from "../i18n";
 import { Bankruptcy, Contact, Faq, Hero, Process } from "../sections";
 import { ContactBar, Footer, Header, Page } from "../ui";
@@ -18,7 +17,7 @@ function BankrotstvoBody({ homeHref }: { homeHref: string }) {
         <Faq />
         <Contact />
       </main>
-      <Footer homeHref={homeHref} policyHref={POLICY_HREF} />
+      <Footer homeHref={homeHref} />
       <ContactBar />
     </Page>
   );

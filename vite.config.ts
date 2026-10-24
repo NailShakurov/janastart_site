@@ -19,6 +19,8 @@ export default defineConfig({
         notfound: page("404.html"),
         kz: page("kz/index.html"),
         kzBankrotstvo: page("kz/bankrotstvo/index.html"),
+        kzOnlain: page("kz/onlain/index.html"),
+        kzPolitika: page("kz/politika/index.html"),
       },
     },
   },

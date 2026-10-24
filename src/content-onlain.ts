@@ -1,5 +1,6 @@
 // Тексты страницы /onlain/ «Юрист онлайн по всему Казахстану». Формулировки согласованы с юристом
 // заказчика (редакция от 17.10.2026) — править только по согласованию.
+import { ONLAIN_CRUMBS, type Crumb } from "./seo";
 
 export const ONLAIN = {
   h1: "Юрист онлайн по всему Казахстану: банкротство и другие дела",
@@ -80,3 +81,31 @@ export const ONLAIN_FAQ = [
     a: "Стоимость зависит от дела и фиксируется в договоре. Назовём её после бесплатной консультации.",
   },
 ];
+
+/** Словарь страницы: русский — ONLAIN_RU, казахский — content-onlain.kk.ts. */
+export type OnlainText = {
+  page: typeof ONLAIN;
+  crumbs: Crumb[];
+  processTitle: string;
+  steps: typeof ONLAIN_STEPS;
+  court: typeof ONLAIN_COURT;
+  whyTitle: string;
+  why: typeof ONLAIN_WHY;
+  faq: typeof ONLAIN_FAQ;
+  /** Название услуги в JSON-LD Service. */
+  serviceName: string;
+  country: string;
+};
+
+export const ONLAIN_RU: OnlainText = {
+  page: ONLAIN,
+  crumbs: ONLAIN_CRUMBS,
+  processTitle: "Как мы работаем удалённо",
+  steps: ONLAIN_STEPS,
+  court: ONLAIN_COURT,
+  whyTitle: "Почему это удобно",
+  why: ONLAIN_WHY,
+  faq: ONLAIN_FAQ,
+  serviceName: "Юрист онлайн по всему Казахстану",
+  country: "Казахстан",
+};

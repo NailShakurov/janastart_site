@@ -1,24 +1,30 @@
-// Тексты сайта на казахском: страницы /kz/ и /kz/bankrotstvo/. Форма — как у CONTENT_RU
-// (src/content.ts): пропущенный ключ — ошибка tsc. Списки вариантов формы — в том же порядке,
-// что русские: в dataLayer уходит русское значение по индексу (src/lead.ts).
+// Тексты сайта на казахском: /kz/, /kz/bankrotstvo/ и ссылки на /kz/onlain/, /kz/politika/.
+// Форма — как у CONTENT_RU (src/content.ts): пропущенный ключ — ошибка tsc. Списки вариантов
+// формы — в том же порядке, что русские: в dataLayer уходит русское значение по индексу (src/lead.ts).
 // Терминология — по Закону РК «О восстановлении платёжеспособности и банкротстве граждан».
-import type { Content } from "./content";
+import type { Content, NavItem } from "./content";
 
 /** Казахская страница банкротства. */
 export const KZ_BANKRUPTCY_HREF = "/kz/bankrotstvo/";
 
+/** Казахская страница «Юрист онлайн». */
+export const KZ_ONLAIN_HREF = "/kz/onlain/";
+
+const NAV: NavItem[] = [
+  { label: "Банкроттық", href: KZ_BANKRUPTCY_HREF },
+  { label: "Қызметтер", href: "#services" },
+  { label: "Онлайн", href: KZ_ONLAIN_HREF },
+  { label: "Қалай жұмыс істейміз", href: "#process" },
+  { label: "Сұрақтар", href: "#faq" },
+  { label: "Байланыс", href: "#contact" },
+];
+
 export const CONTENT_KK: Content = {
-  // «Онлайн» (/onlain/) есть только по-русски — в верхнее меню не выносим, ссылка в подвале.
-  nav: [
-    { label: "Банкроттық", href: KZ_BANKRUPTCY_HREF },
-    { label: "Қызметтер", href: "#services" },
-    { label: "Қалай жұмыс істейміз", href: "#process" },
-    { label: "Сұрақтар", href: "#faq" },
-    { label: "Байланыс", href: "#contact" },
-  ],
+  nav: NAV,
   bankruptcyNav: [
     { label: "Банкроттық", href: "#bankruptcy" },
     { label: "Қалай жұмыс істейміз", href: "#process" },
+    { label: "Онлайн", href: KZ_ONLAIN_HREF },
     { label: "Сұрақтар", href: "#faq" },
     { label: "Байланыс", href: "#contact" },
   ],
@@ -165,6 +171,9 @@ export const CONTENT_KK: Content = {
   ],
   whoOptions: ["Жеке тұлға", "ЖК", "Компания"],
   geoLine: { office: "Кеңсе Алматыда", online: "Қазақстан бойынша онлайн жұмыс істейміз" },
+  subpageNav: NAV.map((i) => (i.href.startsWith("#") ? { ...i, href: `/kz/${i.href}` } : i)),
+  onlainHref: KZ_ONLAIN_HREF,
+  policyHref: "/kz/politika/",
   cityOptions: ["Алматы", "Алматы облысы", "Астана", "Шымкент", "Басқа қала"],
   topicOptions: [
     "Жеке тұлғаның банкроттығы",

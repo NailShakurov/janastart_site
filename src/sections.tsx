@@ -1,6 +1,6 @@
 // Блоки страниц: hero, бегущая строка, банкротство, услуги, этапы, FAQ, контакты с формой.
 import { useState, type FormEvent, type ReactNode } from "react";
-import { CONTENT_RU, ONLAIN_HREF, POLICY_HREF } from "./content";
+import { CONTENT_RU } from "./content";
 import { useContent, useLang, useText } from "./i18n";
 import { buildFallbackText, buildLeadPayload, buildWhatsappText, formSubmitParams } from "./lead";
 import type { Crumb } from "./seo";
@@ -111,16 +111,12 @@ export function Hero({
 
 /** «Офис в Алматы · работаем онлайн по всему Казахстану» — строка под слоганом на главной. */
 export function GeoLine() {
-  const { geoLine } = useContent();
-  // /onlain/ есть только по-русски: с казахской страницы из первого экрана на неё не уводим.
-  const online =
-    useLang() === "kk" ? (
-      geoLine.online
-    ) : (
-      <a href={ONLAIN_HREF} className="underline underline-offset-4 hover:text-white">
-        {geoLine.online}
-      </a>
-    );
+  const { geoLine, onlainHref } = useContent();
+  const online = (
+    <a href={onlainHref} className="underline underline-offset-4 hover:text-white">
+      {geoLine.online}
+    </a>
+  );
   return (
     <>
       {geoLine.office}
@@ -578,7 +574,7 @@ export function Contact(props: {
                 <span>
                   {t.form.consent}
                   <a
-                    href={POLICY_HREF}
+                    href={c.policyHref}
                     target="_blank"
                     rel="noopener"
                     className="underline underline-offset-2"

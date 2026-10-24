@@ -7,8 +7,10 @@ import { NotFound } from "./pages/NotFound";
 import { Bankrotstvo } from "./pages/Bankrotstvo";
 import { Onlain } from "./pages/Onlain";
 import { Politika } from "./pages/Politika";
-import { CONTENT_KK } from "./content.kk";
+import { POLICY_KK } from "./pages/politika.kk";
+import { CONTENT_KK, KZ_ONLAIN_HREF } from "./content.kk";
 import { ONLAIN, ONLAIN_FAQ } from "./content-onlain";
+import { ONLAIN_KK } from "./content-onlain.kk";
 import type { Lang } from "./i18n";
 import {
   BANKRUPTCY_CRUMBS,
@@ -86,6 +88,7 @@ export const PAGES: PageDef[] = [
     file: "onlain/index.html",
     path: "/onlain/",
     Component: Onlain,
+    alternate: KZ_ONLAIN_HREF,
     lastmod: "2026-10-17",
     jsonLd: [
       legalServiceJsonLd(),
@@ -103,8 +106,37 @@ export const PAGES: PageDef[] = [
     file: "politika/index.html",
     path: "/politika/",
     Component: Politika,
+    alternate: CONTENT_KK.policyHref,
     noindex: true,
     jsonLd: [legalServiceJsonLd(), breadcrumbJsonLd(POLICY_CRUMBS)],
+  },
+  {
+    file: "kz/onlain/index.html",
+    path: KZ_ONLAIN_HREF,
+    lang: "kk",
+    alternate: "/onlain/",
+    Component: () => <Onlain lang="kk" />,
+    lastmod: "2026-10-24",
+    jsonLd: [
+      legalServiceJsonLd(UI_KK.seo.orgDescription),
+      breadcrumbJsonLd(ONLAIN_KK.crumbs),
+      serviceJsonLd({
+        name: ONLAIN_KK.serviceName,
+        description: ONLAIN_KK.page.lead,
+        url: KZ_ONLAIN_HREF,
+        area: { "@type": "Country", name: ONLAIN_KK.country },
+      }),
+      faqJsonLd(ONLAIN_KK.faq),
+    ],
+  },
+  {
+    file: "kz/politika/index.html",
+    path: CONTENT_KK.policyHref,
+    lang: "kk",
+    alternate: "/politika/",
+    Component: () => <Politika lang="kk" />,
+    noindex: true,
+    jsonLd: [legalServiceJsonLd(UI_KK.seo.orgDescription), breadcrumbJsonLd(POLICY_KK.crumbs)],
   },
   {
     file: "404.html",

@@ -56,4 +56,10 @@ npm run build    # результат в dist/
 
 1. GitHub → Settings → Pages → Source: **GitHub Actions**.
 2. После первого успешного деплоя: Settings → Pages → Custom domain: `janastart.kz`, затем включить **Enforce HTTPS**.
-3. DNS у регистратора: A-записи `@` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`; CNAME `www` → `nailshakurov.github.io`.
+3. DNS — в Cloudflare (NS у регистратора ps.kz: `alexandra.ns.cloudflare.com`, `mitch.ns.cloudflare.com`): A-записи `@` →
+   `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`; CNAME `www` → `nailshakurov.github.io`.
+4. Cloudflare (аккаунт Наиля, тот же, что у Worker заявок): SSL/TLS **Full** — не Strict: сертификат GitHub за прокси
+   не продлевается. Cache Rule: всё на краю 2 ч без учёта query string (gclid/UTM); Cache Response Rule: `/assets/*` —
+   `public, max-age=31536000, immutable`. Rocket Loader, Email Obfuscation, Bot Fight Mode выключены — ломают GTM и
+   гидрацию. После деплоя job `purge` в `deploy.yml` сбрасывает кэш (секрет `CLOUDFLARE_PURGE_TOKEN`); без секрета
+   новые страницы видны с задержкой до 2 ч.

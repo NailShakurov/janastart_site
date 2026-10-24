@@ -8,7 +8,7 @@ import { Breadcrumbs, Footer, H2, Header, Page, WRAP } from "../ui";
 
 // При включении SITE.leadEndpoint текст разделов 5 и 8 меняется — обновить дату редакции.
 // При подключении почты через Resend добавить его в раздел 5.
-const UPDATED = "24 октября 2026 года";
+const UPDATED = "25 октября 2026 года";
 
 function Section({ n, title, children }: { n: number; title: string; children: ReactNode }) {
   return (
@@ -162,6 +162,11 @@ export function Politika() {
                   <b>GitHub Pages</b> (GitHub, Inc., США): хостинг Сайта. Хостинг-провайдер может
                   фиксировать технические данные запросов (IP-адрес, время обращения) в своих
                   журналах.
+                </>,
+                <>
+                  <b>Cloudflare</b> (Cloudflare, Inc., США): сеть доставки контента — Сайт
+                  открывается через её серверы. Они могут фиксировать технические данные запросов
+                  (IP-адрес, время обращения) в своих журналах.
                 </>,
                 <>
                   <b>Сервисы Google</b> (Google LLC): Google Tag Manager, Google Analytics и Google

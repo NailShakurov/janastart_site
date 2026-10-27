@@ -101,6 +101,7 @@ export const UI_KK: UiText = {
     rights: "Барлық құқықтар қорғалған.",
     info: "Сайт ақпараттық сипатта және жария оферта болып табылмайды.",
     policy: "Құпиялылық саясаты",
+    cookieSettings: "Cookie баптаулары",
   },
   bar: { call: "Қоңырау шалу", whatsapp: "WhatsApp" },
   whatsapp: {

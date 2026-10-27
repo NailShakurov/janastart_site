@@ -251,6 +251,15 @@ export function Footer({ homeHref = "#top" }: { homeHref?: string }) {
           <a href={c.policyHref} className="underline underline-offset-2 hover:text-white">
             {t.footer.policy}
           </a>
+          {" · "}
+          {/* data-cookie-settings: по клику баннер согласия из GTM (gtm/consent-banner.html) открывается снова */}
+          <button
+            type="button"
+            data-cookie-settings
+            className="cursor-pointer underline underline-offset-2 hover:text-white"
+          >
+            {t.footer.cookieSettings}
+          </button>
         </p>
       </div>
     </footer>

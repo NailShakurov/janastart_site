@@ -1,0 +1,82 @@
+<script>
+/* Баннер согласия на cookie и Consent Mode v2 (базовый режим). Код вставляется в GTM-MVHPCXM3
+   вручную: тег «Пользовательский HTML», триггер Consent Initialization - All Pages.
+   До «Принять» все типы согласия denied; теги Google и Meta требуют ad_storage/analytics_storage
+   и до согласия не срабатывают. По клику «Принять» уходит событие consent_update — по нему
+   срабатывают теги страницы (PageView, теги Google); у этих тегов «Один раз на странице».
+   Выбор хранится в localStorage с датой и версией политики; ссылка [data-cookie-settings]
+   в подвале открывает баннер снова. ЧЕРНОВИК: тексты на проверке у юриста. */
+(function () {
+var KEY = "janastart_consent";
+var POLICY = "2026-10-27";
+var TTL = 365 * 24 * 60 * 60 * 1000;
+var TYPES = ["ad_storage", "ad_user_data", "ad_personalization", "analytics_storage"];
+var KK = document.documentElement.lang === "kk";
+var T = KK ? {
+text: "Сайттың қалай жұмыс істейтінін түсіну және сайтқа кірген адамдарға жарнама көрсету үшін біз cookie файлдарын, Google Analytics және Meta мен Google жарнама құралдарын пайдаланамыз. Бұл деректер шетелге беріледі. Толығырақ — ",
+link: "Құпиялылық саясатында", href: "/kz/politika/", accept: "Қабылдау", reject: "Бас тарту"
+} : {
+text: "Мы используем файлы cookie, Google Analytics и рекламные инструменты Meta и Google, чтобы понимать, как работает сайт, и показывать рекламу тем, кто на нём был. Эти данные передаются за рубеж. Подробнее — в ",
+link: "Политике конфиденциальности", href: "/politika/", accept: "Принять", reject: "Отклонить"
+};
+window.dataLayer = window.dataLayer || [];
+function gtag() { window.dataLayer.push(arguments); }
+function state(v) { var s = {}; for (var i = 0; i < TYPES.length; i++) s[TYPES[i]] = v; return s; }
+function read() {
+try {
+var c = JSON.parse(localStorage.getItem(KEY));
+if (c && c.policy === POLICY && Date.now() - c.date < TTL) return c.choice;
+} catch (e) {}
+return null;
+}
+function save(choice) {
+try { localStorage.setItem(KEY, JSON.stringify({ choice: choice, date: Date.now(), policy: POLICY })); } catch (e) {}
+}
+function apply(choice) { gtag("consent", "update", state(choice)); }
+var box = null;
+function hide() { if (box) { box.remove(); box = null; } }
+function button(label, choice) {
+var b = document.createElement("button");
+b.type = "button";
+b.textContent = label;
+b.style.cssText = "flex:1;min-width:120px;padding:10px 16px;border-radius:6px;border:1px solid #f2b84b;background:#141a33;color:#fff;font:600 15px/1.2 inherit;cursor:pointer";
+b.onclick = function () {
+save(choice);
+apply(choice);
+if (choice === "granted") window.dataLayer.push({ event: "consent_update" });
+hide();
+};
+return b;
+}
+function show() {
+if (box) return;
+if (!document.body) { document.addEventListener("DOMContentLoaded", show); return; }
+box = document.createElement("div");
+box.setAttribute("role", "dialog");
+box.setAttribute("aria-label", "Cookie");
+box.style.cssText = "position:fixed;left:16px;right:16px;bottom:16px;z-index:2147483000;max-width:640px;margin:0 auto;padding:16px;border-radius:10px;background:#141a33;color:#d6dbee;font:15px/1.5 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.3)";
+var p = document.createElement("p");
+p.style.margin = "0 0 12px";
+p.appendChild(document.createTextNode(T.text));
+var a = document.createElement("a");
+a.href = T.href;
+a.textContent = T.link;
+a.style.cssText = "color:#fff;text-decoration:underline";
+p.appendChild(a);
+p.appendChild(document.createTextNode("."));
+var row = document.createElement("div");
+row.style.cssText = "display:flex;flex-wrap:wrap;gap:8px";
+row.appendChild(button(T.accept, "granted"));
+row.appendChild(button(T.reject, "denied"));
+box.appendChild(p);
+box.appendChild(row);
+document.body.appendChild(box);
+}
+gtag("consent", "default", state("denied"));
+var choice = read();
+if (choice) apply(choice); else show();
+document.addEventListener("click", function (e) {
+if (e.target.closest && e.target.closest("[data-cookie-settings]")) show();
+});
+})();
+</script>

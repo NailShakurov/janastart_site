@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CONTENT_RU } from "./content";
 import { CONTENT_KK } from "./content.kk";
-import { formSubmitParams } from "./lead";
 import { UI_KK } from "./ui-text.kk";
 
 describe("казахские словари", () => {
@@ -25,20 +23,6 @@ describe("казахские словари", () => {
       expect(card.href).toBe("/kz/bankrotstvo/");
     }
     expect(CONTENT_KK.bankruptcyCrumbs.map((c) => c.path)).toEqual(["/kz/", "/kz/bankrotstvo/"]);
-  });
-  it("значения для dataLayer русские", () => {
-    const lead = {
-      name: "n",
-      phone: "p",
-      who: CONTENT_KK.whoOptions[1],
-      city: CONTENT_KK.cityOptions[2],
-      topic: CONTENT_KK.topicOptions[2],
-    };
-    expect(formSubmitParams(CONTENT_KK, CONTENT_RU, lead)).toEqual({
-      client_type: "ИП",
-      lead_topic: "Долги и коллекторы",
-      lead_city: "Астана",
-    });
   });
   it("интерфейс на казахском", () => {
     expect(UI_KK.lang).toBe("kk");

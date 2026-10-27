@@ -2,6 +2,9 @@
 import { type ComponentType, type ReactNode } from "react";
 import type { Crumb } from "../seo";
 
+/** Подзаголовок пункта внутри раздела (5.1, 5.2). */
+export const SUB = "pt-3 text-[19px] font-bold text-ink";
+
 export type PolicyText = { crumbs: Crumb[]; h1: string; intro: string; Body: ComponentType };
 
 export function Section({ n, title, children }: { n: number; title: string; children: ReactNode }) {

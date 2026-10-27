@@ -1,12 +1,14 @@
 // Пост-обработка сборки (после vite build):
 //  1) вставляет HTML каждой страницы в dist/<page>, чтобы поисковики и мессенджеры
 //     видели контент без выполнения JS;
-//  2) добавляет в <head> JSON-LD, Google Tag Manager и код подтверждения Search Console;
+//  2) добавляет в <head> JSON-LD, согласие Consent Mode (scripts/consent.mjs), Google Tag Manager
+//     и код подтверждения Search Console;
 //  3) встраивает CSS в <style>, чтобы первая отрисовка не ждала отдельного запроса
 //     (на медленном мобильном интернете это лишний круг до сервера);
 //  4) ставит hreflang для пар страниц ru ↔ kk (scripts/hreflang.mjs);
 //  5) генерирует dist/sitemap.xml из реестра страниц (только индексируемые, с lastmod).
 import { readFile, rm, writeFile } from "node:fs/promises";
+import { consentHead } from "./consent.mjs";
 import { hreflangTags } from "./hreflang.mjs";
 
 const { PAGES, SITE, render } = await import("../dist-ssr/entry-server.js");
@@ -64,9 +66,14 @@ for (const page of PAGES) {
   html = html.replace("<!--app-->", render(page));
   html = await inlineCss(html, page.file);
 
-  // GTM — как можно выше в <head>, сразу после кодировки.
+  // GTM — как можно выше в <head>, сразу после кодировки; перед ним — согласие по умолчанию.
   if (SITE.gtmId) {
-    html = insertAfter(html, '<meta charset="UTF-8" />', gtmHead(SITE.gtmId), page.file);
+    html = insertAfter(
+      html,
+      '<meta charset="UTF-8" />',
+      `${consentHead()}\n${gtmHead(SITE.gtmId)}`,
+      page.file,
+    );
     html = insertAfter(html, "<body>", gtmBody(SITE.gtmId), page.file);
   }
 

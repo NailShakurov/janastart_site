@@ -47,34 +47,26 @@ export type UiText = {
     whatsappNote: string;
     email: string;
   };
+  /** Галочка согласия: consentBefore [consentLink] consentMiddle [policyLink] consentAfter. */
   form: {
-    name: string;
-    namePlaceholder: string;
     phone: string;
-    who: string;
-    city: string;
-    cityPlaceholder: string;
-    topic: string;
-    consent: string;
+    consentBefore: string;
     consentLink: string;
+    consentMiddle: string;
+    policyLink: string;
+    consentAfter: string;
     error: string;
     submit: string;
     orCall: string;
   };
-  /** text содержит «{name}» — подставляется имя из формы. */
-  done: { title: string; text: string; link: string; orCall: string };
-  footer: { rights: string; info: string; policy: string };
+  /** Полный текст согласия, раскрывается по ссылке из галочки. */
+  consentDoc: { title: string; items: readonly string[] };
+  /** sendError — копия заявки в Telegram не ушла; после него показывается номер WhatsApp. */
+  done: { title: string; text: string; link: string; orCall: string; sendError: string };
+  footer: { rights: string; info: string; policy: string; cookieSettings: string };
   bar: { call: string; whatsapp: string };
-  /** Приветствие и подписи полей в тексте для wa.me. */
-  whatsapp: {
-    greeting: string;
-    name: string;
-    phone: string;
-    who: string;
-    city: string;
-    topic: string;
-    source: string;
-  };
+  /** greeting — для ссылок «Написать в WhatsApp», leadPrefix — для заявки из формы. */
+  whatsapp: { greeting: string; leadPrefix: string };
   seo: { orgDescription: string };
 };
 
@@ -137,41 +129,48 @@ export const UI_RU: UiText = {
     whatsappNote: ", отвечаем быстрее всего",
     email: "E-mail",
   },
+  // Тексты согласия (form.consent*, consentDoc) утверждены юристом 27.10.2026 (ТЗ ретаргетинга,
+  // приложение А и Б, плюс Cloudflare в п. 3–4). Править только по согласованию.
   form: {
-    name: "Ваше имя",
-    namePlaceholder: "Например, Айгерим",
     phone: "Телефон",
-    who: "Кто вы",
-    city: "Город",
-    cityPlaceholder: "Выберите город",
-    topic: "Тема обращения",
-    consent: "Согласен(на) на сбор и обработку персональных данных (",
-    consentLink: "политика конфиденциальности",
-    error: "Заполните имя, телефон и город и подтвердите согласие.",
+    consentBefore:
+      "Я даю согласие ИП JANA START на обработку моего номера телефона для связи по моей заявке и на его трансграничную передачу через WhatsApp и Telegram на условиях ",
+    consentLink: "Согласия",
+    consentMiddle: " и ",
+    policyLink: "Политики конфиденциальности",
+    consentAfter: ".",
+    error: "Укажите телефон и подтвердите согласие.",
     submit: "Получить консультацию в WhatsApp",
     orCall: "Или позвоните:",
   },
+  consentDoc: {
+    title: "Согласие на обработку персональных данных",
+    items: [
+      "Отправляя форму на сайте janastart.kz и отмечая галочку, я даю согласие ИП JANA START, ИИН 810518401012, адрес: г. Алматы, ул. Ауэзова, 145 В, офис 103 (далее — Оператор), на сбор и обработку моих персональных данных на следующих условиях:",
+      "1. Перечень данных: номер телефона; дата и время заявки; язык страницы.",
+      "2. Цель: связаться со мной по моей заявке и проконсультировать по моему обращению.",
+      "3. Передача третьим лицам: номер передаётся сотрудникам Оператора через мессенджеры WhatsApp (Meta Platforms, Inc.) и Telegram, а также через сервер Cloudflare, Inc. (США), который пересылает заявку и её не хранит; иным третьим лицам не передаётся, кроме случаев, предусмотренных законом.",
+      "4. Трансграничная передача: осуществляется — серверы WhatsApp, Telegram и Cloudflare находятся за пределами Республики Казахстан.",
+      "5. Распространение в общедоступных источниках: не осуществляется.",
+      "6. Срок действия: до достижения цели, но не более 90 дней с момента получения заявки, если между мной и Оператором не заключён договор. При заключении договора данные обрабатываются на условиях договора.",
+      "7. Отзыв: я могу отозвать согласие, написав на janastart02@gmail.com или в WhatsApp +7 700 930-50-50. Оператор прекращает обработку в течение пятнадцати рабочих дней.",
+    ],
+  },
   done: {
     title: "Почти готово",
-    text: "{name}, мы открыли WhatsApp с готовым сообщением — просто нажмите «Отправить». Если окно не открылось, ",
+    text: "Мы открыли WhatsApp с готовым сообщением — просто нажмите «Отправить». Если окно не открылось, ",
     link: "нажмите здесь",
     orCall: "или позвоните:",
+    sendError: "Заявку не удалось отправить. Напишите нам в WhatsApp:",
   },
   footer: {
     rights: "Все права защищены.",
     info: "Сайт носит информационный характер и не является публичной офертой.",
     policy: "Политика конфиденциальности",
+    cookieSettings: "Настройки cookie",
   },
   bar: { call: "Позвонить", whatsapp: "WhatsApp" },
-  whatsapp: {
-    greeting: WHATSAPP_GREETING,
-    name: "Имя",
-    phone: "Телефон",
-    who: "Кто",
-    city: "Город",
-    topic: "Тема",
-    source: "Источник",
-  },
+  whatsapp: { greeting: WHATSAPP_GREETING, leadPrefix: "Новая заявка с сайта:" },
   seo: {
     orgDescription:
       "Банкротство граждан, ИП и компаний по закону РК и юридические услуги в Алматы.",

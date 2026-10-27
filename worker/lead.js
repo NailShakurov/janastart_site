@@ -1,12 +1,10 @@
-// Приём заявок с формы janastart.kz → Telegram (и письмо через Resend, если задан ключ).
+// Приём заявок с формы janastart.kz → Telegram.
 // Cloudflare Worker без зависимостей: код целиком вставляется в редактор Cloudflare.
+// Форма присылает только телефон и язык; номер не сохраняется и не пишется в логи.
 //
 // Секреты и переменные (Settings → Variables and Secrets):
 //   TELEGRAM_TOKEN    — секрет, токен бота от @BotFather;
-//   TELEGRAM_CHAT_ID  — ID чата, куда бот пишет заявки (бот должен быть в чате);
-//   RESEND_API_KEY    — секрет, необязательно: без него письмо не отправляется;
-//   MAIL_TO           — адрес для писем (по умолчанию janastart02@gmail.com);
-//   MAIL_FROM         — отправитель на подтверждённом в Resend домене, например «JANA START <zayavki@janastart.kz>».
+//   TELEGRAM_CHAT_ID  — ID чата, куда бот пишет заявки (бот должен быть в чате).
 // Привязка KV (Settings → Bindings) с именем RATE — ограничение 5 заявок с одного IP в час;
 // без привязки ограничение не работает, остальное работает.
 
@@ -48,18 +46,10 @@ export default {
     // Ловушка для ботов: поле скрыто от людей. Отвечаем «ок», чтобы бот не подбирал обход.
     if (field("website")) return reply(200, { ok: true });
 
-    const lead = {
-      name: field("name"),
-      phone: field("phone"),
-      who: field("who"),
-      city: field("city"),
-      topic: field("topic"),
-      page: field("page"),
-      source: field("source"),
-      lang: field("lang"),
-    };
-    const digits = lead.phone.replace(/\D/g, "");
-    if (!lead.name || digits.length < 10 || digits.length > 11) return reply(400, { ok: false });
+    const phone = field("phone");
+    const lang = field("lang") === "kk" ? "kk" : "ru";
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 11) return reply(400, { ok: false });
 
     if (env.RATE) {
       const ip = request.headers.get("CF-Connecting-IP") || "unknown";
@@ -69,29 +59,21 @@ export default {
       await env.RATE.put(key, String(count + 1), { expirationTtl: 3600 });
     }
 
-    const text = [
-      "Новая заявка с сайта",
-      // Заявка с казахской страницы (/kz/…): её берёт казахоязычный юрист.
-      lead.lang === "kk" && "Тіл: қазақша",
-      `Имя: ${lead.name}`,
-      `Телефон: ${lead.phone}`,
-      lead.who && `Кто: ${lead.who}`,
-      lead.city && `Город: ${lead.city}`,
-      lead.topic && `Тема: ${lead.topic}`,
-      lead.page && `Страница: ${lead.page}`,
-      lead.source && `Источник: ${lead.source}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
+    const time = new Date().toLocaleString("ru-RU", {
+      timeZone: "Asia/Almaty",
+      dateStyle: "short",
+      timeStyle: "short",
+    });
+    const text = `Новая заявка с сайта: ${phone}\nЯзык: ${lang}\nВремя: ${time}`;
 
-    const jobs = [sendTelegram(env, text)];
-    if (env.RESEND_API_KEY && env.MAIL_FROM) jobs.push(sendMail(env, lead, text));
-    const results = await Promise.allSettled(jobs);
-    for (const r of results) if (r.status === "rejected") console.error(r.reason);
-
-    return results.some((r) => r.status === "fulfilled")
-      ? reply(200, { ok: true })
-      : reply(502, { ok: false });
+    try {
+      await sendTelegram(env, text);
+      return reply(200, { ok: true });
+    } catch (err) {
+      // В лог — только статус Telegram, без текста заявки.
+      console.error(err.message);
+      return reply(502, { ok: false });
+    }
   },
 };
 
@@ -101,19 +83,5 @@ async function sendTelegram(env, text) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text, disable_web_page_preview: true }),
   });
-  if (!res.ok) throw new Error(`Telegram ${res.status}: ${await res.text()}`);
-}
-
-async function sendMail(env, lead, text) {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      from: env.MAIL_FROM,
-      to: [env.MAIL_TO || "janastart02@gmail.com"],
-      subject: `Заявка: ${lead.name}, ${lead.city || "город не указан"}`,
-      text,
-    }),
-  });
-  if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
+  if (!res.ok) throw new Error(`Telegram ${res.status}`);
 }

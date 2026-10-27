@@ -1,8 +1,9 @@
 <script>
 /* Баннер согласия на cookie и Consent Mode v2 (базовый режим). Код вставляется в GTM-MVHPCXM3
    вручную: тег «Пользовательский HTML», триггер Consent Initialization - All Pages.
-   До «Принять» все типы согласия denied; теги Google и Meta требуют ad_storage/analytics_storage
-   и до согласия не срабатывают. По клику «Принять» уходит событие consent_update — по нему
+   Согласие по умолчанию (denied) и восстановление сохранённого выбора — в <head> сайта до GTM
+   (scripts/consent.mjs): из этого тега они срабатывали бы позже тегов. KEY и POLICY — те же.
+   Теги Google и Meta требуют ad_storage/analytics_storage и до согласия не срабатывают. По клику «Принять» уходит событие consent_update — по нему
    срабатывают теги страницы (PageView, теги Google); у этих тегов «Один раз на странице».
    Выбор хранится в localStorage с датой и версией политики; ссылка [data-cookie-settings]
    в подвале открывает баннер снова. ЧЕРНОВИК: тексты на проверке у юриста. */
@@ -25,9 +26,9 @@ function state(v) { var s = {}; for (var i = 0; i < TYPES.length; i++) s[TYPES[i
 function read() {
 try {
 var c = JSON.parse(localStorage.getItem(KEY));
-if (c && c.policy === POLICY && Date.now() - c.date < TTL) return c.choice;
+return !!(c && c.policy === POLICY && Date.now() - c.date < TTL);
 } catch (e) {}
-return null;
+return false;
 }
 function save(choice) {
 try { localStorage.setItem(KEY, JSON.stringify({ choice: choice, date: Date.now(), policy: POLICY })); } catch (e) {}
@@ -72,9 +73,7 @@ box.appendChild(p);
 box.appendChild(row);
 document.body.appendChild(box);
 }
-gtag("consent", "default", state("denied"));
-var choice = read();
-if (choice) apply(choice); else show();
+if (!read()) show();
 document.addEventListener("click", function (e) {
 if (e.target.closest && e.target.closest("[data-cookie-settings]")) show();
 });

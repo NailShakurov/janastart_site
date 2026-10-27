@@ -3,6 +3,8 @@
    вручную: тег «Пользовательский HTML», триггер Consent Initialization - All Pages.
    Согласие по умолчанию (denied) и восстановление сохранённого выбора — в <head> сайта до GTM
    (scripts/consent.mjs): из этого тега они срабатывали бы позже тегов. KEY и POLICY — те же.
+   Страховка: если страница пришла без скрипта из <head> (старый HTML из кэша), default ставит этот тег.
+   На телефоне (< 768px) баннер стоит над нижней панелью «Позвонить / WhatsApp» (64px + safe area).
    Теги Google и Meta требуют ad_storage/analytics_storage и до согласия не срабатывают. По клику «Принять» уходит событие consent_update — по нему
    срабатывают теги страницы (PageView, теги Google); у этих тегов «Один раз на странице».
    Выбор хранится в localStorage с датой и версией политики; ссылка [data-cookie-settings]
@@ -26,8 +28,13 @@ function state(v) { var s = {}; for (var i = 0; i < TYPES.length; i++) s[TYPES[i
 function read() {
 try {
 var c = JSON.parse(localStorage.getItem(KEY));
-return !!(c && c.policy === POLICY && Date.now() - c.date < TTL);
+if (c && c.policy === POLICY && Date.now() - c.date < TTL) return c;
 } catch (e) {}
+return null;
+}
+function hasDefault() {
+var dl = window.dataLayer;
+for (var i = 0; i < dl.length; i++) if (dl[i] && dl[i][0] === "consent" && dl[i][1] === "default") return true;
 return false;
 }
 function save(choice) {
@@ -40,7 +47,7 @@ function button(label, choice) {
 var b = document.createElement("button");
 b.type = "button";
 b.textContent = label;
-b.style.cssText = "flex:1;min-width:120px;padding:10px 16px;border-radius:6px;border:1px solid #f2b84b;background:#141a33;color:#fff;font:600 15px/1.2 inherit;cursor:pointer";
+b.style.cssText = "flex:1;min-width:120px;padding:9px 16px;border-radius:6px;border:1px solid #f2b84b;background:#141a33;color:#fff;font:600 15px/1.2 system-ui,sans-serif;cursor:pointer";
 b.onclick = function () {
 save(choice);
 apply(choice);
@@ -55,7 +62,8 @@ if (!document.body) { document.addEventListener("DOMContentLoaded", show); retur
 box = document.createElement("div");
 box.setAttribute("role", "dialog");
 box.setAttribute("aria-label", "Cookie");
-box.style.cssText = "position:fixed;left:16px;right:16px;bottom:16px;z-index:2147483000;max-width:640px;margin:0 auto;padding:16px;border-radius:10px;background:#141a33;color:#d6dbee;font:15px/1.5 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.3)";
+var mobile = window.innerWidth < 768;
+box.style.cssText = "position:fixed;left:" + (mobile ? 8 : 16) + "px;right:" + (mobile ? 8 : 16) + "px;bottom:" + (mobile ? "calc(72px + env(safe-area-inset-bottom))" : "16px") + ";z-index:2147483000;max-width:640px;margin:0 auto;padding:" + (mobile ? 12 : 16) + "px;border-radius:10px;background:#141a33;color:#d6dbee;font:" + (mobile ? 13 : 15) + "px/1.45 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.3)";
 var p = document.createElement("p");
 p.style.margin = "0 0 12px";
 p.appendChild(document.createTextNode(T.text));
@@ -73,7 +81,12 @@ box.appendChild(p);
 box.appendChild(row);
 document.body.appendChild(box);
 }
-if (!read()) show();
+var stored = read();
+if (!hasDefault()) {
+gtag("consent", "default", state("denied"));
+if (stored && stored.choice === "granted") apply("granted");
+}
+if (!stored) show();
 document.addEventListener("click", function (e) {
 if (e.target.closest && e.target.closest("[data-cookie-settings]")) show();
 });

@@ -1,11 +1,10 @@
 // Блоки страниц: hero, бегущая строка, банкротство, услуги, этапы, FAQ, контакты с формой.
 import { useState, type FormEvent, type ReactNode } from "react";
-import { CONTENT_RU } from "./content";
 import { useContent, useLang, useText } from "./i18n";
-import { buildFallbackText, buildLeadPayload, buildWhatsappText, formSubmitParams } from "./lead";
+import { buildLeadPayload, buildLeadText, isValidPhone } from "./lead";
 import type { Crumb } from "./seo";
 import { SITE, whatsappLink } from "./site";
-import { getUtm, track } from "./tracking";
+import { track } from "./tracking";
 import { UI_RU } from "./ui-text";
 import {
   BTN_DARK,
@@ -329,50 +328,41 @@ export function Contact(props: {
   const c = useContent();
   const lang = useLang();
   const { intro = t.contact.intro } = props;
-  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [who, setWho] = useState<string>(c.whoOptions[0]);
-  // Город без значения по умолчанию и обязателен: в lead_city должны попадать реальные города.
-  const [city, setCity] = useState("");
-  const [topic, setTopic] = useState<string>(c.topicOptions[0]);
   const [agree, setAgree] = useState(false);
+  const [showConsent, setShowConsent] = useState(false);
   // Ловушка для ботов: поле скрыто от людей, заполненное значение отбрасывает приёмник.
   const [website, setWebsite] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [sendFailed, setSendFailed] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const digits = phone.replace(/\D/g, "");
-    if (!name.trim() || digits.length < 10 || digits.length > 11 || !city || !agree) {
+    if (!isValidPhone(phone) || !agree) {
       setError(t.form.error);
       return;
     }
     setError(null);
-    const utm = getUtm();
-    const source = Object.entries(utm)
-      .map(([k, v]) => `${k}=${v}`)
-      .join(", ");
-    const lead = { name: name.trim(), phone: phone.trim(), who, city, topic };
-    const text = buildWhatsappText(t.whatsapp, lead, source);
-    // Копия заявки в Telegram и на почту — на случай, если клиент не нажмёт «Отправить»
-    // в WhatsApp. keepalive — запрос доживает до открытия новой вкладки; text/plain и
-    // no-cors — без preflight, ответ нам не нужен. Ошибку глотаем: WhatsApp остаётся
-    // основным каналом.
+    const text = buildLeadText(t.whatsapp, phone.trim());
+    // Копия заявки в Telegram — на случай, если клиент не нажмёт «Отправить» в WhatsApp.
+    // keepalive — запрос доживает до открытия новой вкладки; text/plain — без preflight.
+    // Worker отвечает с CORS: при ошибке показываем посетителю номер WhatsApp.
     if (SITE.leadEndpoint) {
       fetch(SITE.leadEndpoint, {
         method: "POST",
-        mode: "no-cors",
         keepalive: true,
         headers: { "Content-Type": "text/plain;charset=UTF-8" },
-        body: JSON.stringify(
-          buildLeadPayload(lead, { page: window.location.pathname, source, website, lang }),
-        ),
-      }).catch(() => {});
+        body: JSON.stringify(buildLeadPayload(phone.trim(), { website, lang })),
+      })
+        .then((res) => {
+          if (!res.ok) setSendFailed(true);
+        })
+        .catch(() => setSendFailed(true));
     }
     // Событие уходит в dataLayer до открытия WhatsApp. Задержка не нужна: wa.me
     // открывается в новой вкладке, страница с формой остаётся и тег успевает отправиться.
-    track("form_submit", formSubmitParams(c, CONTENT_RU, lead));
+    track("form_submit");
     window.open(whatsappLink(text), "_blank", "noopener");
     setSubmitted(true);
   };
@@ -439,18 +429,10 @@ export function Contact(props: {
               </span>
               <h3 className={`${H3} mt-5`}>{t.done.title}</h3>
               <p className="mt-3 text-ink2">
-                {t.done.text.replace("{name}", name.trim())}
+                {t.done.text}
                 <a
                   className="font-bold text-dawn-dark underline"
-                  href={whatsappLink(
-                    buildFallbackText(t.whatsapp, {
-                      name: name.trim(),
-                      phone: phone.trim(),
-                      who,
-                      city,
-                      topic,
-                    }),
-                  )}
+                  href={whatsappLink(buildLeadText(t.whatsapp, phone.trim()))}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={onWhatsappClick("form")}
@@ -467,6 +449,20 @@ export function Contact(props: {
                 </a>
                 .
               </p>
+              {sendFailed && (
+                <p className="mt-3 text-sm font-semibold text-[#b42318]" role="alert">
+                  {t.done.sendError}{" "}
+                  <a
+                    href={whatsappLink(buildLeadText(t.whatsapp, phone.trim()))}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={onWhatsappClick("form")}
+                    className="underline"
+                  >
+                    {SITE.whatsappLabel}
+                  </a>
+                </p>
+              )}
             </div>
           ) : (
             <form
@@ -484,17 +480,6 @@ export function Contact(props: {
                 onChange={(e) => setWebsite(e.target.value)}
                 className="absolute -left-[9999px] size-px opacity-0"
               />
-              <Field id="name" label={t.form.name}>
-                <input
-                  id="name"
-                  type="text"
-                  autoComplete="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder={t.form.namePlaceholder}
-                  className={INPUT}
-                />
-              </Field>
               <Field id="phone" label={t.form.phone}>
                 <input
                   id="phone"
@@ -507,62 +492,6 @@ export function Contact(props: {
                   className={INPUT}
                 />
               </Field>
-              <fieldset>
-                <legend className="text-[15px] font-bold">{t.form.who}</legend>
-                <div className="mt-1.5 grid grid-cols-3 gap-2">
-                  {c.whoOptions.map((opt) => (
-                    <label
-                      key={opt}
-                      className="cursor-pointer rounded-md border border-[#b9c1d3] bg-white px-2 py-3 text-center text-sm font-semibold has-checked:border-ink has-checked:bg-ink has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-dawn"
-                    >
-                      <input
-                        type="radio"
-                        name="who"
-                        value={opt}
-                        checked={who === opt}
-                        onChange={() => setWho(opt)}
-                        className="sr-only"
-                      />
-                      {opt}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-              <Field id="city" label={t.form.city}>
-                <select
-                  id="city"
-                  name="city"
-                  required
-                  autoComplete="address-level2"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className={`${INPUT} ${city ? "" : "text-[#6b7280]"}`}
-                >
-                  <option value="" disabled>
-                    {t.form.cityPlaceholder}
-                  </option>
-                  {c.cityOptions.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field id="topic" label={t.form.topic}>
-                <select
-                  id="topic"
-                  name="topic"
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  className={INPUT}
-                >
-                  {c.topicOptions.map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              </Field>
               <label htmlFor="agree" className="flex cursor-pointer items-start gap-2.5 text-sm">
                 <input
                   id="agree"
@@ -572,18 +501,41 @@ export function Contact(props: {
                   className="mt-1 size-4 shrink-0 accent-green"
                 />
                 <span>
-                  {t.form.consent}
+                  {t.form.consentBefore}
+                  <button
+                    type="button"
+                    aria-expanded={showConsent}
+                    aria-controls="consent-doc"
+                    onClick={() => setShowConsent((v) => !v)}
+                    className="cursor-pointer underline underline-offset-2"
+                  >
+                    {t.form.consentLink}
+                  </button>
+                  {t.form.consentMiddle}
                   <a
                     href={c.policyHref}
                     target="_blank"
                     rel="noopener"
                     className="underline underline-offset-2"
                   >
-                    {t.form.consentLink}
+                    {t.form.policyLink}
                   </a>
-                  )
+                  {t.form.consentAfter}
                 </span>
               </label>
+              {showConsent && (
+                <div
+                  id="consent-doc"
+                  className="max-h-64 overflow-y-auto rounded-md border border-line bg-white p-3 text-sm text-ink2"
+                >
+                  <p className="font-bold text-ink">{t.consentDoc.title}</p>
+                  {t.consentDoc.items.map((item) => (
+                    <p key={item} className="mt-2">
+                      {item}
+                    </p>
+                  ))}
+                </div>
+              )}
               {error && (
                 <p className="text-sm font-semibold text-[#b42318]" role="alert">
                   {error}

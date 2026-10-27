@@ -35,16 +35,16 @@
 - **Google Tag Manager и Search Console** — `src/site.ts`: `gtmId` (контейнер GTM-XXXXXXX) и `googleSiteVerification`.
   Пока значения пустые, ничего не вставляется. GA4, Google Ads и Яндекс.Метрика настраиваются внутри GTM, прямой
   gtag.js на сайт не добавлять.
-- **UTM-метки и события конверсий** — `src/tracking.ts`. В `dataLayer` уходят `form_submit` (client_type, lead_topic, lead_city),
+- **UTM-метки и события конверсий** — `src/tracking.ts`. В `dataLayer` уходят `form_submit` (без своих параметров),
   `phone_click` и `whatsapp_click` (link_location: header / hero / contacts / form / footer / sticky_bar), ко всем
-  добавляется `page_path`, `page_lang` (ru | kk) и сохранённые UTM. Значения `client_type`, `lead_topic`, `lead_city`
-  всегда русские, даже с казахских страниц (`src/lead.ts`), чтобы отчёты не делились по языкам. В GTM для них нужны триггеры «Пользовательское событие» с этими именами; триггеры по клику на
+  добавляется `page_path`, `page_lang` (ru | kk) и сохранённые UTM. В GTM для них нужны триггеры «Пользовательское событие» с этими именами; триггеры по клику на
   tel:/wa.me не добавлять, иначе клики посчитаются дважды. Имя и телефон в события не передаются.
 
-Заявки с формы открывают WhatsApp с заполненным сообщением на номер из `src/site.ts`
-(GitHub Pages не умеет принимать формы на сервере). Копия заявки уходит в Telegram через Cloudflare Worker
-`worker/lead.js` (адрес — `leadEndpoint` в `src/site.ts`); заявка с казахской страницы помечена строкой
-«Тіл: қазақша». После правки `worker/lead.js` код вставляется в редактор Cloudflare вручную.
+Форма собирает только телефон и галочку согласия. Она открывает WhatsApp с сообщением «Новая заявка с сайта: +7 …»
+на номер из `src/site.ts` (GitHub Pages не умеет принимать формы на сервере). Копия уходит в Telegram через
+Cloudflare Worker `worker/lead.js` (адрес — `leadEndpoint` в `src/site.ts`): номер, язык страницы и время.
+Worker номер не хранит и не логирует; если копия не ушла, посетитель видит сообщение и номер WhatsApp.
+После правки `worker/lead.js` код вставляется в редактор Cloudflare вручную.
 
 ## Локально
 

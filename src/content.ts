@@ -174,26 +174,8 @@ export const FAQ = [
   },
 ];
 
-export const WHO_OPTIONS = ["Физлицо", "ИП", "Компания"] as const;
-
 /** Строка под слоганом на главной (раздел ТЗ «География»), ссылка ведёт на /onlain/. */
 export const GEO_LINE = { office: "Офис в Алматы", online: "работаем онлайн по всему Казахстану" };
-
-/** Поле «Город» в форме: уходит в WhatsApp-сообщение и в событие form_submit как lead_city. */
-export const CITY_OPTIONS = [
-  "Алматы",
-  "Алматинская обл.",
-  "Астана",
-  "Шымкент",
-  "Другой город",
-] as const;
-
-export const TOPIC_OPTIONS = [
-  "Банкротство физлица",
-  "Банкротство ИП или компании",
-  "Долги и коллекторы",
-  "Другой юридический вопрос",
-] as const;
 
 /** Адрес страницы политики конфиденциальности. */
 export const POLICY_HREF = "/politika/";
@@ -219,9 +201,6 @@ export type Content = {
   steps: { title: string; text: string }[];
   why: { title: string; text: string }[];
   faq: { q: string; a: string }[];
-  whoOptions: readonly [string, string, string];
-  cityOptions: readonly [string, string, string, string, string];
-  topicOptions: readonly [string, string, string, string];
   geoLine: { office: string; online: string };
   /** Меню внутренних страниц (/onlain/, /politika/): якоря ведут на блоки главной. */
   subpageNav: NavItem[];
@@ -253,9 +232,6 @@ export const CONTENT_RU: Content = {
   steps: STEPS,
   why: WHY,
   faq: FAQ,
-  whoOptions: WHO_OPTIONS,
-  cityOptions: CITY_OPTIONS,
-  topicOptions: TOPIC_OPTIONS,
   geoLine: GEO_LINE,
   subpageNav: SUBPAGE_NAV,
   onlainHref: ONLAIN_HREF,

@@ -4,7 +4,8 @@
    Согласие по умолчанию (denied) и восстановление сохранённого выбора — в <head> сайта до GTM
    (scripts/consent.mjs): из этого тега они срабатывали бы позже тегов. KEY и POLICY — те же.
    Страховка: если страница пришла без скрипта из <head> (старый HTML из кэша), default ставит этот тег.
-   На телефоне (< 768px) баннер стоит над нижней панелью «Позвонить / WhatsApp» (64px + safe area).
+   Баннер — тонкая полоса внизу (на телефоне < 768px — над панелью «Позвонить / WhatsApp»):
+   текст обрезан до 2 строк, «Подробнее» или клик по тексту раскрывает его полностью.
    Теги Google и Meta требуют ad_storage/analytics_storage и до согласия не срабатывают. По клику «Принять» уходит событие consent_update — по нему
    срабатывают теги страницы (PageView, теги Google); у этих тегов «Один раз на странице».
    Выбор хранится в localStorage с датой и версией политики; ссылка [data-cookie-settings]
@@ -17,10 +18,10 @@ var TYPES = ["ad_storage", "ad_user_data", "ad_personalization", "analytics_stor
 var KK = document.documentElement.lang === "kk";
 var T = KK ? {
 text: "Сайттың қалай жұмыс істейтінін түсіну және сайтқа кірген адамдарға жарнама көрсету үшін біз cookie файлдарын, Google Analytics және Meta мен Google жарнама құралдарын пайдаланамыз. Бұл деректер шетелге беріледі. Толығырақ — ",
-link: "Құпиялылық саясатында", href: "/kz/politika/", accept: "Қабылдау", reject: "Бас тарту"
+link: "Құпиялылық саясатында", href: "/kz/politika/", more: "Толығырақ", accept: "Қабылдау", reject: "Бас тарту"
 } : {
 text: "Мы используем файлы cookie, Google Analytics и рекламные инструменты Meta и Google, чтобы понимать, как работает сайт, и показывать рекламу тем, кто на нём был. Эти данные передаются за рубеж. Подробнее — в ",
-link: "Политике конфиденциальности", href: "/politika/", accept: "Принять", reject: "Отклонить"
+link: "Политике конфиденциальности", href: "/politika/", more: "Подробнее", accept: "Принять", reject: "Отклонить"
 };
 window.dataLayer = window.dataLayer || [];
 function gtag() { window.dataLayer.push(arguments); }
@@ -47,7 +48,7 @@ function button(label, choice) {
 var b = document.createElement("button");
 b.type = "button";
 b.textContent = label;
-b.style.cssText = "flex:1;min-width:120px;padding:9px 16px;border-radius:6px;border:1px solid #f2b84b;background:#141a33;color:#fff;font:600 15px/1.2 system-ui,sans-serif;cursor:pointer";
+b.style.cssText = "flex:none;padding:7px 14px;border-radius:6px;border:1px solid #f2b84b;background:#141a33;color:#fff;font:600 14px/1.2 system-ui,sans-serif;cursor:pointer";
 b.onclick = function () {
 save(choice);
 apply(choice);
@@ -63,9 +64,10 @@ box = document.createElement("div");
 box.setAttribute("role", "dialog");
 box.setAttribute("aria-label", "Cookie");
 var mobile = window.innerWidth < 768;
-box.style.cssText = "position:fixed;left:" + (mobile ? 8 : 16) + "px;right:" + (mobile ? 8 : 16) + "px;bottom:" + (mobile ? "calc(72px + env(safe-area-inset-bottom))" : "16px") + ";z-index:2147483000;max-width:640px;margin:0 auto;padding:" + (mobile ? 12 : 16) + "px;border-radius:10px;background:#141a33;color:#d6dbee;font:" + (mobile ? 13 : 15) + "px/1.45 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.3)";
+box.style.cssText = "position:fixed;left:0;right:0;bottom:" + (mobile ? "calc(72px + env(safe-area-inset-bottom))" : "0") + ";z-index:2147483000;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:8px max(12px,env(safe-area-inset-left));background:#141a33;color:#d6dbee;font:" + (mobile ? 12 : 14) + "px/1.35 system-ui,sans-serif;box-shadow:0 -4px 16px rgba(0,0,0,.25)";
 var p = document.createElement("p");
-p.style.margin = "0 0 12px";
+var CLAMP = "display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;";
+p.style.cssText = CLAMP + "flex:1 1 280px;margin:0;cursor:pointer";
 p.appendChild(document.createTextNode(T.text));
 var a = document.createElement("a");
 a.href = T.href;
@@ -74,12 +76,21 @@ a.style.cssText = "color:#fff;text-decoration:underline";
 p.appendChild(a);
 p.appendChild(document.createTextNode("."));
 var row = document.createElement("div");
-row.style.cssText = "display:flex;flex-wrap:wrap;gap:8px";
+row.style.cssText = "display:flex;align-items:center;gap:8px;margin-left:auto";
+var more = document.createElement("button");
+more.type = "button";
+more.textContent = T.more;
+more.style.cssText = "flex:none;padding:7px 4px;border:0;background:none;color:#fff;font:inherit;text-decoration:underline;cursor:pointer";
+function expand() { p.style.cssText = "flex:1 1 280px;margin:0"; more.remove(); }
+more.onclick = expand;
+p.onclick = expand;
+row.appendChild(more);
 row.appendChild(button(T.accept, "granted"));
 row.appendChild(button(T.reject, "denied"));
 box.appendChild(p);
 box.appendChild(row);
 document.body.appendChild(box);
+if (p.scrollHeight <= p.clientHeight) expand();
 }
 var stored = read();
 if (!hasDefault()) {

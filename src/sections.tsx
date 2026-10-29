@@ -78,7 +78,8 @@ export function Hero({
         {subline && <p className="mt-4 text-[17px] text-mist">{subline}</p>}
         {kzNote && <p className="mt-4 text-[17px] font-bold text-dawn">{kzNote}</p>}
         <p className="mt-5 max-w-[54ch] text-[19px] text-mist-light">{lead}</p>
-        <div className="mt-7 flex flex-wrap gap-3">
+        {/* data-hero-cta: пока кнопки видны, нижняя панель ContactBar прячется и их не перекрывает */}
+        <div data-hero-cta className="mt-7 flex flex-wrap gap-3">
           <a href="#contact" className={BTN_MAIN}>
             {t.hero.consult}
           </a>

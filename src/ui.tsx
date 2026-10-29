@@ -268,23 +268,29 @@ export function Footer({ homeHref = "#top" }: { homeHref?: string }) {
 
 /**
  * Закреплённая внизу панель «Позвонить» / «WhatsApp» на экранах уже 768px (md).
- * Прячется, пока на экране форма заявки ([data-lead-form]) или открыта клавиатура
- * (фокус в поле ввода). Распорка под подвалом не даёт панели перекрыть его.
+ * Прячется, пока на экране форма заявки ([data-lead-form]), кнопки первого экрана
+ * ([data-hero-cta], видны хотя бы наполовину) или открыта клавиатура (фокус в поле ввода).
+ * Распорка под подвалом не даёт панели перекрыть его.
  */
 export function ContactBar() {
   const t = useText();
   const [formVisible, setFormVisible] = useState(false);
+  const [heroVisible, setHeroVisible] = useState(false);
   const [typing, setTyping] = useState(false);
 
   useEffect(() => {
-    const form = document.querySelector("[data-lead-form]");
-    let observer: IntersectionObserver | undefined;
-    if (form && "IntersectionObserver" in window) {
-      observer = new IntersectionObserver(([entry]) =>
-        setFormVisible(entry?.isIntersecting ?? false),
-      );
-      observer.observe(form);
-    }
+    const observers: IntersectionObserver[] = [];
+    const watch = (selector: string, set: (v: boolean) => void, threshold = 0) => {
+      const el = document.querySelector(selector);
+      if (!el || !("IntersectionObserver" in window)) return;
+      const o = new IntersectionObserver(([entry]) => set(entry?.isIntersecting ?? false), {
+        threshold,
+      });
+      o.observe(el);
+      observers.push(o);
+    };
+    watch("[data-lead-form]", setFormVisible);
+    watch("[data-hero-cta]", setHeroVisible, 0.5);
     const isField = (t: EventTarget | null) =>
       t instanceof HTMLElement && t.matches("input, textarea, select, [contenteditable]");
     const onFocusIn = (e: FocusEvent) => isField(e.target) && setTyping(true);
@@ -292,13 +298,13 @@ export function ContactBar() {
     document.addEventListener("focusin", onFocusIn);
     document.addEventListener("focusout", onFocusOut);
     return () => {
-      observer?.disconnect();
+      for (const o of observers) o.disconnect();
       document.removeEventListener("focusin", onFocusIn);
       document.removeEventListener("focusout", onFocusOut);
     };
   }, []);
 
-  const hidden = formVisible || typing;
+  const hidden = formVisible || heroVisible || typing;
   return (
     <>
       <div aria-hidden="true" className="h-[calc(4rem+env(safe-area-inset-bottom))] md:hidden" />

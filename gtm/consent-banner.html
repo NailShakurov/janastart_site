@@ -4,8 +4,9 @@
    Согласие по умолчанию (denied) и восстановление сохранённого выбора — в <head> сайта до GTM
    (scripts/consent.mjs): из этого тега они срабатывали бы позже тегов. KEY и POLICY — те же.
    Страховка: если страница пришла без скрипта из <head> (старый HTML из кэша), default ставит этот тег.
-   Баннер — тонкая полоса внизу (на телефоне < 768px — над панелью «Позвонить / WhatsApp»):
-   текст обрезан до 2 строк, «Подробнее» или клик по тексту раскрывает его полностью.
+   Баннер не перекрывает кнопки связи первого экрана: стоит в пустом нижнем отступе первого блока
+   (#top, pb-[150px]), уезжает при прокрутке; на страницах без #top — в потоке над шапкой.
+   Текст обрезан до 2 строк, «Подробнее» или клик по тексту раскрывает его полностью.
    Теги Google и Meta требуют ad_storage/analytics_storage и до согласия не срабатывают. По клику «Принять» уходит событие consent_update — по нему
    срабатывают теги страницы (PageView, теги Google); у этих тегов «Один раз на странице».
    Выбор хранится в localStorage с датой и версией политики; ссылка [data-cookie-settings]
@@ -43,7 +44,20 @@ try { localStorage.setItem(KEY, JSON.stringify({ choice: choice, date: Date.now(
 }
 function apply(choice) { gtag("consent", "update", state(choice)); }
 var box = null;
-function hide() { if (box) { box.remove(); box = null; } }
+var collapsedH = 0;
+// В нижний отступ #top (шапка z-40 и панель z-30 — поверх баннера при прокрутке); без #top — в начало body.
+function place() {
+if (!box) return;
+var hero = document.getElementById("top");
+if (!hero) { if (box.parentNode !== document.body || box !== document.body.firstChild) document.body.insertBefore(box, document.body.firstChild); return; }
+if (box.parentNode !== document.body) document.body.appendChild(box);
+box.style.position = "absolute";
+box.style.left = "0";
+box.style.right = "0";
+box.style.zIndex = "20";
+box.style.top = Math.round(hero.getBoundingClientRect().bottom + window.scrollY - collapsedH) + "px";
+}
+function hide() { if (box) { box.remove(); box = null; window.removeEventListener("resize", place); window.removeEventListener("load", place); } }
 function button(label, choice) {
 var b = document.createElement("button");
 b.type = "button";
@@ -64,7 +78,7 @@ box = document.createElement("div");
 box.setAttribute("role", "dialog");
 box.setAttribute("aria-label", "Cookie");
 var mobile = window.innerWidth < 768;
-box.style.cssText = "position:fixed;left:0;right:0;bottom:" + (mobile ? "calc(72px + env(safe-area-inset-bottom))" : "0") + ";z-index:2147483000;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:8px max(12px,env(safe-area-inset-left));background:#141a33;color:#d6dbee;font:" + (mobile ? 12 : 14) + "px/1.35 system-ui,sans-serif;box-shadow:0 -4px 16px rgba(0,0,0,.25)";
+box.style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:8px max(12px,env(safe-area-inset-left));background:#141a33;color:#d6dbee;border-top:1px solid #2a3150;border-bottom:1px solid #2a3150;font:" + (mobile ? 12 : 14) + "px/1.35 system-ui,sans-serif";
 var p = document.createElement("p");
 var CLAMP = "display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;";
 p.style.cssText = CLAMP + "flex:1 1 280px;margin:0;cursor:pointer";
@@ -91,6 +105,10 @@ box.appendChild(p);
 box.appendChild(row);
 document.body.appendChild(box);
 if (p.scrollHeight <= p.clientHeight) expand();
+collapsedH = box.offsetHeight;
+place();
+window.addEventListener("resize", place);
+window.addEventListener("load", place);
 }
 var stored = read();
 if (!hasDefault()) {
@@ -99,7 +117,7 @@ if (stored && stored.choice === "granted") apply("granted");
 }
 if (!stored) show();
 document.addEventListener("click", function (e) {
-if (e.target.closest && e.target.closest("[data-cookie-settings]")) show();
+if (e.target.closest && e.target.closest("[data-cookie-settings]")) { show(); if (box) box.scrollIntoView({ block: "center" }); }
 });
 })();
 </script>

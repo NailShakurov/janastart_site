@@ -38,6 +38,11 @@ export const SITE = {
    * и на почту. Пустая строка — заявка уходит только в WhatsApp, как раньше.
    */
   leadEndpoint: "https://janastart-lead.nshakurov.workers.dev",
+  /**
+   * Счётчик нажатий WhatsApp (worker/monitor.js): пустой POST без данных человека; в 19:00 пн–пт
+   * монитор пишет в Telegram, если с 9:00 не было ни одного. Пустая строка — не считать.
+   */
+  clickEndpoint: "https://janastart-monitor.nshakurov.workers.dev/click",
   /** Код подтверждения Google Search Console (meta google-site-verification), если нет доступа к DNS. */
   googleSiteVerification: "",
 } as const;

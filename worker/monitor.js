@@ -1,6 +1,8 @@
-// Мониторинг доступности janastart.kz → Telegram (этап 3 ТЗ, задача 4).
+// Мониторинг доступности janastart.kz → Telegram (этап 3 ТЗ, задачи 4 и 5).
 // Отдельный Cloudflare Worker без зависимостей: код целиком вставляется в редактор Cloudflare.
-// Триггер Cron (Settings → Triggers): */5 * * * * — проверка раз в 5 минут.
+// Триггеры Cron (Settings → Triggers): */5 * * * * — проверка раз в 5 минут;
+// 0 14 * * 1-5 — 19:00 по Алматы (UTC+5) пн–пт: если с 9:00 не было ни одного нажатия WhatsApp
+// (сайт шлёт пустой POST /click без данных о человеке), — сообщение в Telegram.
 // Сбой подтверждается двумя проверками подряд: уведомление приходит не позже чем через 10 минут,
 // одиночный сбой сети не будит. Когда сайт снова отвечает — второе сообщение.
 //
@@ -9,7 +11,7 @@
 //   TELEGRAM_CHAT_ID  — ID чата, где владелец и Наиль (бот должен быть в чате);
 //   FORCE_FAIL        — необязательно: «1» на время тестового отключения, все проверки «падают».
 // Привязка KV (Settings → Bindings) с именем STATE — помнит число сбоев подряд; можно та же
-// база, что RATE у worker/lead.js. Без привязки уведомление уходит на каждый сбой.
+// база, что RATE у worker/lead.js. Без привязки уведомление уходит на каждый сбой, клики не считаются.
 
 const CHECKS = [
   { name: "Главная https://janastart.kz/", url: "https://janastart.kz/", text: "JANA START" },
@@ -29,12 +31,49 @@ const CHECKS = [
 const CONFIRM = 2;
 const TIMEOUT_MS = 15_000;
 const KEY = "monitor";
+const CLICK_KEY = "wa_click";
+const CLICK_CRON = "0 14 * * 1-5";
+const ALLOWED_ORIGINS = ["https://janastart.kz", "https://www.janastart.kz"];
 
 export default {
-  async scheduled(_event, env) {
-    return runChecks(env);
+  async scheduled(event, env) {
+    return event.cron === CLICK_CRON ? checkClicks(env) : runChecks(env);
+  },
+
+  /** POST /click — нажатие WhatsApp на сайте. Хранится только время, без IP и данных человека. */
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    if (request.method !== "POST" || url.pathname !== "/click")
+      return new Response(null, { status: 404 });
+    if (!ALLOWED_ORIGINS.includes(request.headers.get("Origin") || "")) {
+      return new Response(null, { status: 403 });
+    }
+    if (env.STATE) {
+      // Одна запись в день: лимит записей KV на бесплатном тарифе — 1000 в сутки.
+      const last = Number((await env.STATE.get(CLICK_KEY)) || 0);
+      if (last < workdayStart(Date.now())) await env.STATE.put(CLICK_KEY, String(Date.now()));
+    }
+    return new Response(null, { status: 204 });
   },
 };
+
+/** Начало рабочего дня — 9:00 по Алматы (04:00 UTC) текущих суток UTC. */
+function workdayStart(ts) {
+  const d = new Date(ts);
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 4);
+}
+
+/** 19:00 пн–пт: ни одного нажатия WhatsApp с 9:00 — сообщение в Telegram. */
+async function checkClicks(env) {
+  if (!env.STATE) return;
+  const last = Number((await env.STATE.get(CLICK_KEY)) || 0);
+  if (last >= workdayStart(Date.now())) return;
+  await sendTelegram(
+    env,
+    `⚠️ Сегодня с 9:00 до 19:00 ни одного нажатия WhatsApp на janastart.kz.\n` +
+      `Проверьте сайт с телефона: кнопки WhatsApp, баннер cookie, форма.\n${now()}`,
+  );
+}
 
 /** Проверяет все адреса, шлёт в Telegram «упал» и «снова работает». Возвращает ошибки по имени. */
 async function runChecks(env) {
@@ -50,7 +89,10 @@ async function runChecks(env) {
     if (error && (next[c.name] === CONFIRM || !env.STATE)) down.push(`${c.name}: ${error}`);
     if (!error && before >= CONFIRM) up.push(c.name);
   });
-  if (env.STATE) await env.STATE.put(KEY, JSON.stringify(next));
+  // Пишем только при изменении: 288 проверок в сутки не тратят лимит записей KV.
+  if (env.STATE && JSON.stringify(next) !== JSON.stringify(prev)) {
+    await env.STATE.put(KEY, JSON.stringify(next));
+  }
   if (down.length) await sendTelegram(env, `⚠️ Сайт не отвечает\n${down.join("\n")}\n${now()}`);
   if (up.length) await sendTelegram(env, `✅ Снова работает\n${up.join("\n")}\n${now()}`);
   return Object.fromEntries(CHECKS.map((c, i) => [c.name, results[i]]));

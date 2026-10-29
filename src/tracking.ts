@@ -77,3 +77,13 @@ export function track(event: ConversionEvent, data: Record<string, string> = {})
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event, ...payload });
 }
+
+/** Пустой sendBeacon на endpoint — без cookie и данных человека; ошибки и ответ не важны. */
+export function countClick(endpoint: string) {
+  if (!isBrowser() || !endpoint || !navigator.sendBeacon) return;
+  try {
+    navigator.sendBeacon(endpoint);
+  } catch {
+    /* счётчик не должен мешать переходу в WhatsApp */
+  }
+}

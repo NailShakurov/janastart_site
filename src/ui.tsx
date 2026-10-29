@@ -4,7 +4,7 @@ import type { NavItem } from "./content";
 import { useAltHref, useContent, useLang, useText } from "./i18n";
 import type { Crumb } from "./seo";
 import { SITE, whatsappLink } from "./site";
-import { track, type LinkLocation } from "./tracking";
+import { countClick, track, type LinkLocation } from "./tracking";
 
 // Боковые отступы не меньше выреза iPhone в альбомной ориентации (viewport-fit=cover в index.html)
 export const WRAP =
@@ -21,9 +21,14 @@ export const BTN_DARK = `${BTN} bg-ink text-white hover:bg-ink2`;
 export const INPUT =
   "mt-1.5 block w-full rounded-md border border-[#b9c1d3] bg-white p-[13px] text-base focus:border-ink focus:outline-none";
 
-/** Обработчики кликов по wa.me и tel: — событие в dataLayer с местом ссылки на странице. */
-export const onWhatsappClick = (link_location: LinkLocation) => () =>
+/**
+ * Обработчики кликов по wa.me и tel: — событие в dataLayer с местом ссылки на странице.
+ * Нажатие WhatsApp ещё и засчитывается счётчику монитора (SITE.clickEndpoint).
+ */
+export const onWhatsappClick = (link_location: LinkLocation) => () => {
   track("whatsapp_click", { link_location });
+  countClick(SITE.clickEndpoint);
+};
 export const onPhoneClick = (link_location: LinkLocation) => () =>
   track("phone_click", { link_location });
 

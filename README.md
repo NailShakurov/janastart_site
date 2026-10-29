@@ -52,6 +52,10 @@ Cloudflare Worker `worker/lead.js` (адрес — `leadEndpoint` в `src/site.t
 Worker номер не хранит и не логирует; если копия не ушла, посетитель видит сообщение и номер WhatsApp.
 После правки `worker/lead.js` код вставляется в редактор Cloudflare вручную.
 
+Мониторинг доступности — отдельный Worker `worker/monitor.js` (`janastart-monitor`, Cron `*/5 * * * *`):
+главная, `/bankrotstvo/` и Worker заявок; после двух сбоев подряд (≤ 10 мин) — сообщение в Telegram,
+после восстановления — ещё одно. Секреты, привязка KV и тестовое отключение (`FORCE_FAIL=1`) — в шапке файла.
+
 ## Локально
 
 ```sh

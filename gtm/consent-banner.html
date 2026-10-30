@@ -1,5 +1,5 @@
 <script>
-/* Баннер согласия на cookie и Consent Mode v2 (базовый режим). Код вставляется в GTM-MVHPCXM3
+/* Баннер согласия на cookie и Consent Mode v2 (расширенный режим). Код вставляется в GTM-MVHPCXM3
    вручную: тег «Пользовательский HTML», триггер Consent Initialization - All Pages.
    Согласие по умолчанию (denied) и восстановление сохранённого выбора — в <head> сайта до GTM
    (scripts/consent.mjs): из этого тега они срабатывали бы позже тегов. KEY и POLICY — те же.
@@ -7,13 +7,13 @@
    Баннер не перекрывает кнопки связи первого экрана: стоит в пустом нижнем отступе первого блока
    (#top, pb-[150px]), уезжает при прокрутке; на страницах без #top — в потоке над шапкой.
    Текст обрезан до 2 строк, «Подробнее» или клик по тексту раскрывает его полностью.
-   Теги Google и Meta требуют ad_storage/analytics_storage и до согласия не срабатывают. По клику «Принять» уходит событие consent_update — по нему
-   срабатывают теги страницы (PageView, теги Google); у этих тегов «Один раз на странице».
+   Теги Google — без доп. согласия: до «Принять» работают без cookie. Meta требует ad_storage. По клику «Принять» уходит событие
+   consent_update — по нему срабатывают теги страницы (PageView Meta); у этих тегов «Один раз на странице».
    Выбор хранится в localStorage с датой и версией политики; ссылка [data-cookie-settings]
    в подвале открывает баннер снова. Тексты утверждены юристом 27.10.2026. */
 (function () {
 var KEY = "janastart_consent";
-var POLICY = "2026-10-27";
+var POLICY = "2026-10-30";
 var TTL = 365 * 24 * 60 * 60 * 1000;
 var TYPES = ["ad_storage", "ad_user_data", "ad_personalization", "analytics_storage"];
 var KK = document.documentElement.lang === "kk";

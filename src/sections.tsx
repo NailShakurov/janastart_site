@@ -93,6 +93,13 @@ export function Hero({
             {t.hero.whatsapp}
           </a>
         </div>
+        <p className="mt-3 max-w-[62ch] text-[13px] text-mist">
+          {t.hero.noticeBefore}
+          <a href={c.policyHref} className="underline">
+            {t.hero.noticeLink}
+          </a>
+          {t.hero.noticeAfter}
+        </p>
         {note && <p className="mt-5 max-w-[62ch] text-[15px] text-mist">{note}</p>}
         <ul className="mt-11 flex flex-wrap gap-x-9 gap-y-3">
           {c.facts.map((f) => (

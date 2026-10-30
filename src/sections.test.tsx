@@ -28,3 +28,16 @@ describe("ссылки WhatsApp на казахской странице", () =>
     }
   });
 });
+
+describe("уведомление о согласии под кнопками первого экрана", () => {
+  it("ведёт на политику своего языка", () => {
+    const render = (lang: "ru" | "kk") =>
+      renderToString(
+        <LangProvider lang={lang} altHref="/">
+          <Hero title="t" />
+        </LangProvider>,
+      );
+    expect(render("ru")).toContain('href="/politika/"');
+    expect(render("kk")).toContain('href="/kz/politika/"');
+  });
+});

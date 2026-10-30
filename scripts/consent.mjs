@@ -2,7 +2,7 @@
 // страницы увидят «не задано» (= разрешено). Здесь же восстанавливается сохранённый выбор.
 // Баннер и кнопки — в GTM (gtm/consent-banner.html); KEY и POLICY должны совпадать с ним.
 export const CONSENT_KEY = "janastart_consent";
-export const CONSENT_POLICY = "2026-10-27";
+export const CONSENT_POLICY = "2026-10-30";
 const TTL_MS = 365 * 24 * 60 * 60 * 1000;
 
 const types = (v) =>

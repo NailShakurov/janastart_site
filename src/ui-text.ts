@@ -31,7 +31,14 @@ export type UiText = {
     home: { title: string; tagline: string; lead: string; kzNote?: string };
     bankrotstvo: { title: string; lead: string; kzNote?: string };
   };
-  hero: { consult: string; whatsapp: string };
+  /** Под кнопками первого экрана: noticeBefore [noticeLink → политика] noticeAfter (согласие по ответу юриста 30.10.2026). */
+  hero: {
+    consult: string;
+    whatsapp: string;
+    noticeBefore: string;
+    noticeLink: string;
+    noticeAfter: string;
+  };
   bankruptcy: { title: string; lead: string; count: string; law: string; discuss: string };
   otherServices: { title: string; lead: string };
   process: { title: string };
@@ -105,7 +112,14 @@ export const UI_RU: UiText = {
       lead: "Помогаем гражданам, ИП и компаниям законно выйти из долгов: внесудебное и судебное банкротство, восстановление платёжеспособности. Юристы с 20-летним стажем, первая консультация бесплатно.",
     },
   },
-  hero: { consult: "Бесплатная консультация", whatsapp: "Написать в WhatsApp" },
+  hero: {
+    consult: "Бесплатная консультация",
+    whatsapp: "Написать в WhatsApp",
+    noticeBefore:
+      "Переходя по ссылкам на сайте, вы соглашаетесь на обработку персональных данных в соответствии с ",
+    noticeLink: "Политикой конфиденциальности",
+    noticeAfter: ".",
+  },
   bankruptcy: {
     title: "Банкротство по закону Казахстана",
     lead: "Подходящая процедура зависит от суммы долга, просрочки, дохода и имущества. На консультации мы честно скажем, какая из них вам подходит и подходит ли банкротство вообще.",

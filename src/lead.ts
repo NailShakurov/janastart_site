@@ -18,8 +18,15 @@ export function buildLeadPayload(
   return { phone, ...extra };
 }
 
-/** Телефон Казахстана: 10–11 цифр (с кодом страны или без). */
+/** Телефон Казахстана: 11 цифр с кодом страны (поле начинается с «+7 »). */
 export function isValidPhone(phone: string): boolean {
-  const digits = phone.replace(/\D/g, "");
-  return digits.length >= 10 && digits.length <= 11;
+  return phone.replace(/\D/g, "").length === 11;
+}
+
+/** Поле телефона всегда начинается с «+7 »: номер вводят с кода оператора. Вставка и автозаполнение «+7…», «7…», «8…» префикс не дублируют. */
+export function withCountryCode(value: string): string {
+  let rest = (value.startsWith("+7") ? value.slice(2) : value.replace(/^\+/, "")).trimStart();
+  const digits = rest.replace(/\D/g, "");
+  if (digits.length === 11 && /^[78]/.test(digits)) rest = rest.replace(/^\D*[78]\s*/, "");
+  return `+7 ${rest}`;
 }

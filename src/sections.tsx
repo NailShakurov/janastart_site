@@ -1,7 +1,7 @@
 // Блоки страниц: hero, бегущая строка, банкротство, услуги, этапы, FAQ, контакты с формой.
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useContent, useLang, useText } from "./i18n";
-import { buildLeadPayload, buildLeadText, isValidPhone } from "./lead";
+import { buildLeadPayload, buildLeadText, isValidPhone, withCountryCode } from "./lead";
 import type { Crumb } from "./seo";
 import { SITE, whatsappLink } from "./site";
 import { track } from "./tracking";
@@ -336,7 +336,7 @@ export function Contact(props: {
   const c = useContent();
   const lang = useLang();
   const { intro = t.contact.intro } = props;
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+7 ");
   const [showConsent, setShowConsent] = useState(false);
   // Ловушка для ботов: поле скрыто от людей, заполненное значение отбрасывает приёмник.
   const [website, setWebsite] = useState("");
@@ -494,7 +494,7 @@ export function Contact(props: {
                   inputMode="tel"
                   autoComplete="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(withCountryCode(e.target.value))}
                   placeholder="+7 7__ ___-__-__"
                   className={INPUT}
                 />

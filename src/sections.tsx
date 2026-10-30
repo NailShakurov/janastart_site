@@ -337,7 +337,6 @@ export function Contact(props: {
   const lang = useLang();
   const { intro = t.contact.intro } = props;
   const [phone, setPhone] = useState("");
-  const [agree, setAgree] = useState(false);
   const [showConsent, setShowConsent] = useState(false);
   // Ловушка для ботов: поле скрыто от людей, заполненное значение отбрасывает приёмник.
   const [website, setWebsite] = useState("");
@@ -347,7 +346,7 @@ export function Contact(props: {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!isValidPhone(phone) || !agree) {
+    if (!isValidPhone(phone)) {
       setError(t.form.error);
       return;
     }
@@ -500,37 +499,29 @@ export function Contact(props: {
                   className={INPUT}
                 />
               </Field>
-              <label htmlFor="agree" className="flex cursor-pointer items-start gap-2.5 text-sm">
-                <input
-                  id="agree"
-                  type="checkbox"
-                  checked={agree}
-                  onChange={(e) => setAgree(e.target.checked)}
-                  className="mt-1 size-4 shrink-0 accent-green"
-                />
-                <span>
-                  {t.form.consentBefore}
-                  <button
-                    type="button"
-                    aria-expanded={showConsent}
-                    aria-controls="consent-doc"
-                    onClick={() => setShowConsent((v) => !v)}
-                    className="cursor-pointer underline underline-offset-2"
-                  >
-                    {t.form.consentLink}
-                  </button>
-                  {t.form.consentMiddle}
-                  <a
-                    href={c.policyHref}
-                    target="_blank"
-                    rel="noopener"
-                    className="underline underline-offset-2"
-                  >
-                    {t.form.policyLink}
-                  </a>
-                  {t.form.consentAfter}
-                </span>
-              </label>
+              {/* Согласие — отправкой формы, без галочки (ответ юриста 30.10.2026). */}
+              <p className="text-sm">
+                {t.form.consentBefore}
+                <button
+                  type="button"
+                  aria-expanded={showConsent}
+                  aria-controls="consent-doc"
+                  onClick={() => setShowConsent((v) => !v)}
+                  className="cursor-pointer underline underline-offset-2"
+                >
+                  {t.form.consentLink}
+                </button>
+                {t.form.consentMiddle}
+                <a
+                  href={c.policyHref}
+                  target="_blank"
+                  rel="noopener"
+                  className="underline underline-offset-2"
+                >
+                  {t.form.policyLink}
+                </a>
+                {t.form.consentAfter}
+              </p>
               {showConsent && (
                 <div
                   id="consent-doc"

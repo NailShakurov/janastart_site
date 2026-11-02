@@ -6,6 +6,7 @@ import { App } from "./App";
 import { NotFound } from "./pages/NotFound";
 import { Bankrotstvo } from "./pages/Bankrotstvo";
 import { Onlain } from "./pages/Onlain";
+import { Oferta } from "./pages/Oferta";
 import { Politika } from "./pages/Politika";
 import { POLICY_KK } from "./pages/politika.kk";
 import { CONTENT_KK, KZ_ONLAIN_HREF } from "./content.kk";
@@ -14,6 +15,7 @@ import { ONLAIN_KK } from "./content-onlain.kk";
 import type { Lang } from "./i18n";
 import {
   BANKRUPTCY_CRUMBS,
+  OFFER_CRUMBS,
   ONLAIN_CRUMBS,
   POLICY_CRUMBS,
   breadcrumbJsonLd,
@@ -109,6 +111,13 @@ export const PAGES: PageDef[] = [
     alternate: CONTENT_KK.policyHref,
     noindex: true,
     jsonLd: [legalServiceJsonLd(), breadcrumbJsonLd(POLICY_CRUMBS)],
+  },
+  {
+    file: "oferta/index.html",
+    path: "/oferta/",
+    Component: Oferta,
+    noindex: true,
+    jsonLd: [legalServiceJsonLd(), breadcrumbJsonLd(OFFER_CRUMBS)],
   },
   {
     file: "kz/onlain/index.html",

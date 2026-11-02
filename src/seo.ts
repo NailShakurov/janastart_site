@@ -91,6 +91,7 @@ export const serviceJsonLd = (opts: {
 export const HOME_CRUMB: Crumb = { name: "Главная", path: "/" };
 export const BANKRUPTCY_CRUMBS: Crumb[] = CONTENT_RU.bankruptcyCrumbs;
 export const ONLAIN_CRUMBS: Crumb[] = [HOME_CRUMB, { name: "Юрист онлайн", path: "/onlain/" }];
+export const OFFER_CRUMBS: Crumb[] = [HOME_CRUMB, { name: "Публичная оферта", path: "/oferta/" }];
 export const POLICY_CRUMBS: Crumb[] = [
   HOME_CRUMB,
   { name: "Политика конфиденциальности", path: "/politika/" },

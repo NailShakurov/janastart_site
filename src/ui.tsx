@@ -226,6 +226,7 @@ export function Header({ nav, homeHref = "#top" }: { nav: NavItem[]; homeHref?: 
 export function Footer({ homeHref = "#top" }: { homeHref?: string }) {
   const t = useText();
   const c = useContent();
+  const lang = useLang();
   return (
     <footer className="bg-ink py-9 text-sm text-footer">
       <div className={WRAP}>
@@ -257,6 +258,15 @@ export function Footer({ homeHref = "#top" }: { homeHref?: string }) {
             {t.footer.policy}
           </a>
           {" · "}
+          {/* Оферта только на русском: казахские страницы ссылаются лишь на /kz/ (pages.test.tsx). */}
+          {lang === "ru" && (
+            <>
+              <a href="/oferta/" className="underline underline-offset-2 hover:text-white">
+                {t.footer.offer}
+              </a>
+              {" · "}
+            </>
+          )}
           {/* data-cookie-settings: по клику баннер согласия из GTM (gtm/consent-banner.html) открывается снова */}
           <button
             type="button"

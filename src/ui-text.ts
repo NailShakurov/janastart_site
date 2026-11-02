@@ -70,7 +70,7 @@ export type UiText = {
   consentDoc: { title: string; items: readonly string[] };
   /** sendError — копия заявки в Telegram не ушла; после него показывается номер WhatsApp. */
   done: { title: string; text: string; link: string; orCall: string; sendError: string };
-  footer: { rights: string; info: string; policy: string; cookieSettings: string };
+  footer: { rights: string; info: string; policy: string; offer: string; cookieSettings: string };
   bar: { call: string; whatsapp: string };
   /** greeting — для ссылок «Написать в WhatsApp», leadPrefix — для заявки из формы. */
   whatsapp: { greeting: string; leadPrefix: string };
@@ -179,8 +179,9 @@ export const UI_RU: UiText = {
   },
   footer: {
     rights: "Все права защищены.",
-    info: "Сайт носит информационный характер и не является публичной офертой.",
+    info: "Сведения на страницах сайта носят информационный характер и не являются публичной офертой. Условия оказания услуг определяются Публичной офертой.",
     policy: "Политика конфиденциальности",
+    offer: "Публичная оферта",
     cookieSettings: "Настройки cookie",
   },
   bar: { call: "Позвонить", whatsapp: "WhatsApp" },

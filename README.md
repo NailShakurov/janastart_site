@@ -12,7 +12,7 @@
 - **Тексты, услуги, этапы, FAQ** — `src/content.ts`; подписи, кнопки, форма, подвал — `src/ui-text.ts`;
   блоки страниц — `src/sections.tsx`; шапка и подвал — `src/ui.tsx`. Разметка сама текста не содержит: всё берётся
   из словарей через контекст языка (`src/i18n.tsx`).
-- **Казахская версия** — страницы `/kz/`, `/kz/bankrotstvo/`, `/kz/onlain/`, `/kz/politika/` (шаблоны в `kz/…`), те же
+- **Казахская версия** — страницы `/kz/`, `/kz/bankrotstvo/`, `/kz/bankrotstvo/vosstanovlenie-platezhesposobnosti/`, `/kz/onlain/`, `/kz/politika/` (шаблоны в `kz/…`), те же
   компоненты с `lang="kk"`. Тексты — `src/content.kk.ts`, `src/ui-text.kk.ts`, `src/content-onlain.kk.ts` и
   `src/pages/politika.kk.tsx`, той же формы, что русские: пропущенный
   ключ не даст собрать сайт, но устаревший перевод компилятор не заметит — при правке русского текста правьте и
@@ -24,6 +24,8 @@
   `src/kz-….tsx`, запись в `vite.config.ts` и в `PAGES` с `lang: "kk"` и `alternate` у обеих страниц пары.
 - **Страницы:** главная `index.html` + `src/App.tsx`; хаб банкротства `bankrotstvo/index.html` + `src/pages/Bankrotstvo.tsx`;
   юрист онлайн по Казахстану `onlain/index.html` + `src/pages/Onlain.tsx` (тексты в `src/content-onlain.ts`, согласованы с юристом);
+  восстановление платёжеспособности `bankrotstvo/vosstanovlenie-platezhesposobnosti/index.html` + `src/pages/Vosstanovlenie.tsx`
+  (тексты в `src/content-vp.ts` и `src/content-vp.kk.ts`, пара `/kz/bankrotstvo/vosstanovlenie-platezhesposobnosti/`);
   политика конфиденциальности `politika/index.html` + `src/pages/Politika.tsx`; страница ошибки `404.html` + `src/pages/NotFound.tsx`.
   Новая страница добавляется в `vite.config.ts` (input) и в реестр `src/entry-server.tsx` (PAGES): путь, компонент,
   `lastmod`, блоки JSON-LD.

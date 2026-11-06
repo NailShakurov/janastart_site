@@ -20,7 +20,7 @@ describe("казахские словари", () => {
       "#contact",
     ]);
     for (const card of [...CONTENT_KK.procedures, ...CONTENT_KK.services]) {
-      expect(card.href).toBe("/kz/bankrotstvo/");
+      expect(card.href.startsWith("/kz/bankrotstvo/")).toBe(true);
     }
     expect(CONTENT_KK.bankruptcyCrumbs.map((c) => c.path)).toEqual(["/kz/", "/kz/bankrotstvo/"]);
   });

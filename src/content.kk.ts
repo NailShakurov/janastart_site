@@ -53,7 +53,7 @@ export const CONTENT_KK: Content = {
     },
     {
       title: "Төлем қабілеттілігін қалпына келтіру",
-      href: KZ_BANKRUPTCY_HREF,
+      href: "/kz/bankrotstvo/vosstanovlenie-platezhesposobnosti/",
       text: "Сот арқылы: табысыңыз болса, қарызды өтеу жоспары.",
     },
     {

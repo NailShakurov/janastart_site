@@ -6,12 +6,15 @@ import { App } from "./App";
 import { NotFound } from "./pages/NotFound";
 import { Bankrotstvo } from "./pages/Bankrotstvo";
 import { Onlain } from "./pages/Onlain";
+import { Vosstanovlenie } from "./pages/Vosstanovlenie";
 import { Oferta } from "./pages/Oferta";
 import { Politika } from "./pages/Politika";
 import { POLICY_KK } from "./pages/politika.kk";
 import { CONTENT_KK, KZ_ONLAIN_HREF } from "./content.kk";
 import { ONLAIN, ONLAIN_FAQ } from "./content-onlain";
 import { ONLAIN_KK } from "./content-onlain.kk";
+import { VP_HREF, VP_RU } from "./content-vp";
+import { KZ_VP_HREF, VP_KK } from "./content-vp.kk";
 import type { Lang } from "./i18n";
 import {
   BANKRUPTCY_CRUMBS,
@@ -84,6 +87,43 @@ export const PAGES: PageDef[] = [
       legalServiceJsonLd(UI_KK.seo.orgDescription),
       breadcrumbJsonLd(CONTENT_KK.bankruptcyCrumbs),
       faqJsonLd(CONTENT_KK.faq),
+    ],
+  },
+  {
+    file: "bankrotstvo/vosstanovlenie-platezhesposobnosti/index.html",
+    path: VP_HREF,
+    Component: Vosstanovlenie,
+    alternate: KZ_VP_HREF,
+    lastmod: "2026-11-06",
+    jsonLd: [
+      legalServiceJsonLd(),
+      breadcrumbJsonLd(VP_RU.crumbs),
+      serviceJsonLd({
+        name: VP_RU.serviceName,
+        description: VP_RU.page.lead,
+        url: VP_HREF,
+        area: { "@type": "Country", name: VP_RU.country },
+      }),
+      faqJsonLd(VP_RU.faq),
+    ],
+  },
+  {
+    file: "kz/bankrotstvo/vosstanovlenie-platezhesposobnosti/index.html",
+    path: KZ_VP_HREF,
+    lang: "kk",
+    alternate: VP_HREF,
+    Component: () => <Vosstanovlenie lang="kk" />,
+    lastmod: "2026-11-06",
+    jsonLd: [
+      legalServiceJsonLd(UI_KK.seo.orgDescription),
+      breadcrumbJsonLd(VP_KK.crumbs),
+      serviceJsonLd({
+        name: VP_KK.serviceName,
+        description: VP_KK.page.lead,
+        url: KZ_VP_HREF,
+        area: { "@type": "Country", name: VP_KK.country },
+      }),
+      faqJsonLd(VP_KK.faq),
     ],
   },
   {

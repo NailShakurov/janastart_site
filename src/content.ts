@@ -50,7 +50,7 @@ export const PROCEDURES: ServiceCard[] = [
   },
   {
     title: "Восстановление платёжеспособности",
-    href: BANKRUPTCY_HREF, // Этап 2: /bankrotstvo/vosstanovlenie-platezhesposobnosti/
+    href: "/bankrotstvo/vosstanovlenie-platezhesposobnosti/",
     text: "Через суд: план погашения долгов, если у вас есть доход.",
   },
   {
